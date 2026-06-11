@@ -1,0 +1,2578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STP: FKP Migration Dashboard - Outstanding Work</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 25px 40px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .metrics-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px 40px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 25px 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-card.commercial {
+            border-left-color: #667eea;
+        }
+
+        .metric-card.gia2h {
+            border-left-color: #f093fb;
+        }
+
+        .metric-card.blackjack {
+            border-left-color: #4facfe;
+        }
+
+        .metric-number {
+            font-size: 3em;
+            font-weight: 800;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            color: #6c757d;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .dashboard {
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .migration-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
+        .migration-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .migration-table th {
+            padding: 14px 10px;
+            text-align: center;
+            font-weight: 700;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.8em;
+            line-height: 1.4;
+            min-width: 80px;
+        }
+
+        .migration-table th.team-col {
+            text-align: left;
+            position: sticky;
+            left: 0;
+            z-index: 20;
+            background: #2c3e50;
+            min-width: 220px;
+            max-width: 220px;
+        }
+
+        .migration-table th.env-header {
+            font-size: 0.95em;
+            padding: 16px 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 800;
+        }
+
+        .migration-table th.commercial-header {
+            background: #667eea;
+        }
+
+        .migration-table th.gia2h-header {
+            background: #f093fb;
+        }
+
+        .migration-table th.blackjack-header {
+            background: #4facfe;
+        }
+
+        .migration-table th.commercial-milestone {
+            background: #5a6fd8;
+        }
+
+        .migration-table th.gia2h-milestone {
+            background: #e081f0;
+        }
+
+        .migration-table th.blackjack-milestone {
+            background: #3d9cec;
+        }
+
+        .migration-table tbody tr {
+            transition: background-color 0.2s;
+        }
+
+        .migration-table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .migration-table tbody tr:hover {
+            background: #e7f1ff;
+        }
+
+        .migration-table td {
+            padding: 14px 10px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            vertical-align: middle;
+            font-size: 0.95em;
+        }
+
+        .migration-table td.team-name {
+            font-weight: 600;
+            text-align: left;
+            position: sticky;
+            left: 0;
+            background: inherit;
+            z-index: 5;
+            border-right: 2px solid #dee2e6;
+            font-size: 0.9em;
+        }
+
+        .migration-table tbody tr:nth-child(even) td.team-name {
+            background: #f8f9fa;
+        }
+
+        .migration-table tbody tr:hover td.team-name {
+            background: #e7f1ff;
+        }
+
+        .cell-complete {
+            background: #28a745;
+            color: white;
+            font-weight: 700;
+            font-size: 1.3em;
+        }
+
+        .cell-remaining {
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .cell-na {
+            background: #e9ecef;
+            color: #adb5bd;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .no-results h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 30px;
+            padding: 20px 40px;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95em;
+        }
+
+        .legend-box {
+            width: 40px;
+            height: 25px;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .legend-box.complete {
+            background: #28a745;
+            color: white;
+        }
+
+        .legend-box.remaining {
+            background: white;
+            color: #667eea;
+            border: 1px solid #667eea;
+        }
+
+        .legend-box.na {
+            background: #e9ecef;
+            color: #adb5bd;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .dashboard {
+                padding: 10px;
+            }
+
+            .migration-table {
+                font-size: 0.8em;
+            }
+
+            .migration-table th.team-col {
+                min-width: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 STP: FKP Migration - Outstanding Work</h1>
+            <p>Service Teams with Remaining Milestones</p>
+        </div>
+
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Search teams..." />
+            </div>
+        </div>
+
+        <div class="dashboard" id="dashboard"></div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box complete">✓</div>
+                <span><strong>Completed</strong></span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box remaining">R###</div>
+                <span><strong>Remaining</strong> (Target Release)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box na">-</div>
+                <span><strong>Not Applicable</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+const teams = [
+  {
+    "name": "Analysis & Reporting / VDP",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "complete",
+        "release": 244
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "complete",
+        "release": 244
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "remaining",
+        "release": 264
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "na",
+        "release": null
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "na",
+        "release": null
+      }
+    ]
+  },
+  {
+    "name": "C4SSH",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "complete",
+        "release": 254
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "complete",
+        "release": 258
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "complete",
+        "release": 258
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "remaining",
+        "release": 262
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "remaining",
+        "release": 266
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "na",
+        "release": null
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "remaining",
+        "release": 266
+      }
+    ]
+  },
+  {
+    "name": "Discovery & Inventory",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "complete",
+        "release": 248
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "remaining",
+        "release": 264
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "na",
+        "release": null
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "na",
+        "release": null
+      }
+    ]
+  },
+  {
+    "name": "Edge Application Delivery",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "na",
+        "release": 264
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "remaining",
+        "release": 268
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "remaining",
+        "release": 268
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "remaining",
+        "release": 268
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "remaining",
+        "release": 268
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "remaining",
+        "release": 268
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "na",
+        "release": null
+      }
+    ]
+  },
+  {
+    "name": "Egress Gateway",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "remaining",
+        "release": 268
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "remaining",
+        "release": 268
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "remaining",
+        "release": 268
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "remaining",
+        "release": 268
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "remaining",
+        "release": 270
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "remaining",
+        "release": 270
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "remaining",
+        "release": 270
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "remaining",
+        "release": 270
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "remaining",
+        "release": 272
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "remaining",
+        "release": 272
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "remaining",
+        "release": 272
+      }
+    ]
+  },
+  {
+    "name": "JIT (Data Plane)",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "complete",
+        "release": 250
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "complete",
+        "release": 262
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "remaining",
+        "release": 266
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "remaining",
+        "release": null
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "remaining",
+        "release": null
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "remaining",
+        "release": null
+      }
+    ]
+  },
+  {
+    "name": "KMS",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "complete",
+        "release": 244
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "complete",
+        "release": 248
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "complete",
+        "release": 254
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "complete",
+        "release": 250
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "complete",
+        "release": 252
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "complete",
+        "release": 252
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "complete",
+        "release": 252
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "complete",
+        "release": 260
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "remaining",
+        "release": 264
+      }
+    ]
+  },
+  {
+    "name": "Kerberos",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "complete",
+        "release": 258
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "remaining",
+        "release": 264
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "remaining",
+        "release": 266
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "na",
+        "release": null
+      }
+    ]
+  },
+  {
+    "name": "LIME",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "complete",
+        "release": 258
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "remaining",
+        "release": 262
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "remaining",
+        "release": 262
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "remaining",
+        "release": 264
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "complete",
+        "release": 262
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "remaining",
+        "release": 264
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "na",
+        "release": null
+      }
+    ]
+  },
+  {
+    "name": "Matlock",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "complete",
+        "release": 256
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "complete",
+        "release": 258
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "complete",
+        "release": 262
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "remaining",
+        "release": 264
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "remaining",
+        "release": 266
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "na",
+        "release": null
+      }
+    ]
+  },
+  {
+    "name": "NetSec - Falcon Platform Services (FPS)",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "complete",
+        "release": 244
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "complete",
+        "release": 244
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "complete",
+        "release": 248
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "remaining",
+        "release": 262
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "remaining",
+        "release": 262
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "remaining",
+        "release": 262
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "na",
+        "release": null
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "remaining",
+        "release": 266
+      }
+    ]
+  },
+  {
+    "name": "NetSec - L7 Firewall",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "remaining",
+        "release": 266
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "complete",
+        "release": 262
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "complete",
+        "release": 262
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "complete",
+        "release": 262
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "na",
+        "release": null
+      }
+    ]
+  },
+  {
+    "name": "PKI",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "complete",
+        "release": 244
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "complete",
+        "release": 250
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "complete",
+        "release": 252
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "remaining",
+        "release": 266
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "complete",
+        "release": 254
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "remaining",
+        "release": 266
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "remaining",
+        "release": 266
+      }
+    ]
+  },
+  {
+    "name": "PRA",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "complete",
+        "release": 244
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "complete",
+        "release": 250
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "complete",
+        "release": 250
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "remaining",
+        "release": 264
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "complete",
+        "release": 256
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "remaining",
+        "release": 264
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "remaining",
+        "release": null
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "remaining",
+        "release": null
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "remaining",
+        "release": null
+      }
+    ]
+  },
+  {
+    "name": "QuantumK",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "complete",
+        "release": 244
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "complete",
+        "release": 248
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "complete",
+        "release": 250
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "remaining",
+        "release": 266
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "complete",
+        "release": 256
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "complete",
+        "release": 262
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "complete",
+        "release": 262
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "remaining",
+        "release": 264
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "remaining",
+        "release": 266
+      }
+    ]
+  },
+  {
+    "name": "Salesforce Asset Inventory",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "complete",
+        "release": 248
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "complete",
+        "release": 248
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "complete",
+        "release": 252
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "complete",
+        "release": 248
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "complete",
+        "release": 248
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "complete",
+        "release": 254
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "complete",
+        "release": 258
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "complete",
+        "release": 262
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "remaining",
+        "release": 264
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "na",
+        "release": null
+      }
+    ]
+  },
+  {
+    "name": "Salesforce Private Connect",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "remaining",
+        "release": null
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "remaining",
+        "release": null
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "remaining",
+        "release": null
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "remaining",
+        "release": null
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "remaining",
+        "release": null
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "remaining",
+        "release": null
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "remaining",
+        "release": null
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "remaining",
+        "release": null
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "remaining",
+        "release": null
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "na",
+        "release": null
+      }
+    ]
+  },
+  {
+    "name": "SecDS",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "remaining",
+        "release": 270
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "remaining",
+        "release": 272
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "na",
+        "release": null
+      }
+    ]
+  },
+  {
+    "name": "SecIAMSvc",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "complete",
+        "release": 250
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "complete",
+        "release": 250
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "complete",
+        "release": 252
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "complete",
+        "release": 258
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "remaining",
+        "release": 270
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "remaining",
+        "release": 272
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "na",
+        "release": null
+      }
+    ]
+  },
+  {
+    "name": "SecPortal",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "complete",
+        "release": 258
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "complete",
+        "release": 258
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "remaining",
+        "release": 264
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "remaining",
+        "release": 264
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "na",
+        "release": null
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "na",
+        "release": null
+      }
+    ]
+  },
+  {
+    "name": "Stride",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "complete",
+        "release": 244
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "complete",
+        "release": 260
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "complete",
+        "release": 254
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "remaining",
+        "release": 262
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "remaining",
+        "release": 264
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "remaining",
+        "release": 264
+      }
+    ]
+  },
+  {
+    "name": "Vault",
+    "commercial": [
+      {
+        "id": "1.0",
+        "name": "Dev Pilot POC",
+        "status": "complete",
+        "release": 244
+      },
+      {
+        "id": "1.1",
+        "name": "Dev FKP Conversion",
+        "status": "complete",
+        "release": 246
+      },
+      {
+        "id": "1.2",
+        "name": "Pre-Prod FKP Conversion",
+        "status": "complete",
+        "release": 248
+      },
+      {
+        "id": "1.3",
+        "name": "FKP Prod Conversion",
+        "status": "complete",
+        "release": 252
+      },
+      {
+        "id": "1.4",
+        "name": "Mesh+IG Onboarding",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "1.5",
+        "name": "Traffic Switching",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "1.6",
+        "name": "Commercial Decommission Complete",
+        "status": "complete",
+        "release": 254
+      }
+    ],
+    "gia2h": [
+      {
+        "id": "2.1",
+        "name": "Gia2h Dev",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "2.2",
+        "name": "Gia2h Pre-Prod",
+        "status": "complete",
+        "release": 260
+      },
+      {
+        "id": "2.3",
+        "name": "Gia2h Prod",
+        "status": "complete",
+        "release": 262
+      },
+      {
+        "id": "2.4",
+        "name": "Gia2h Decommission Complete",
+        "status": "remaining",
+        "release": 264
+      }
+    ],
+    "blackjack": [
+      {
+        "id": "3.1",
+        "name": "BJ-A Dev",
+        "status": "remaining",
+        "release": 264
+      },
+      {
+        "id": "3.2",
+        "name": "BJ-A Stage",
+        "status": "remaining",
+        "release": 266
+      },
+      {
+        "id": "3.3",
+        "name": "BJ-A Prod",
+        "status": "remaining",
+        "release": 266
+      }
+    ]
+  }
+];
+
+        let filteredTeams = [...teams];
+
+        function getCellClass(status) {
+            if (status === 'complete') return 'cell-complete';
+            if (status === 'na') return 'cell-na';
+            return 'cell-remaining';
+        }
+
+        function getCellContent(milestone) {
+            if (milestone.status === 'complete') {
+                return '✓';
+            } else if (milestone.status === 'na') {
+                return '-';
+            } else {
+                // Remaining - show release or TBD
+                return milestone.release ? `R${milestone.release}` : 'TBD';
+            }
+        }
+
+        function calculateMetrics() {
+            const metrics = {
+                totalTeams: teams.length,
+                commercialOutstanding: 0,
+                gia2hOutstanding: 0,
+                blackjackOutstanding: 0
+            };
+
+            teams.forEach(team => {
+                // Check if team has remaining work in each environment
+                const hasCommercialWork = team.commercial.some(m => m.status === 'remaining');
+                const hasGia2hWork = team.gia2h.some(m => m.status === 'remaining');
+                const hasBlackjackWork = team.blackjack.some(m => m.status === 'remaining');
+
+                if (hasCommercialWork) metrics.commercialOutstanding++;
+                if (hasGia2hWork) metrics.gia2hOutstanding++;
+                if (hasBlackjackWork) metrics.blackjackOutstanding++;
+            });
+
+            return metrics;
+        }
+
+        function renderMetrics() {
+            const metrics = calculateMetrics();
+            const metricsContainer = document.createElement('div');
+            metricsContainer.className = 'metrics-section';
+            metricsContainer.innerHTML = `
+                <div class="metric-card">
+                    <div class="metric-number">${metrics.totalTeams}</div>
+                    <div class="metric-label">Total Teams</div>
+                </div>
+                <div class="metric-card commercial">
+                    <div class="metric-number">${metrics.commercialOutstanding}</div>
+                    <div class="metric-label">Commercial Work Outstanding</div>
+                </div>
+                <div class="metric-card gia2h">
+                    <div class="metric-number">${metrics.gia2hOutstanding}</div>
+                    <div class="metric-label">Gia2h Work Outstanding</div>
+                </div>
+                <div class="metric-card blackjack">
+                    <div class="metric-number">${metrics.blackjackOutstanding}</div>
+                    <div class="metric-label">Blackjack-A Work Outstanding</div>
+                </div>
+            `;
+            
+            // Insert before dashboard
+            const dashboard = document.getElementById('dashboard');
+            dashboard.parentNode.insertBefore(metricsContainer, dashboard);
+        }
+
+        function renderTableHeader() {
+            return `
+                <thead>
+                    <tr>
+                        <th class="team-col" rowspan="2">Team</th>
+                        <th class="env-header commercial-header" colspan="7">Commercial</th>
+                        <th class="env-header gia2h-header" colspan="4">Gia2h</th>
+                        <th class="env-header blackjack-header" colspan="3">Blackjack-A</th>
+                    </tr>
+                    <tr>
+                        <th class="commercial-milestone">1.0<br>Dev POC</th>
+                        <th class="commercial-milestone">1.1<br>Dev FKP</th>
+                        <th class="commercial-milestone">1.2<br>Pre-Prod</th>
+                        <th class="commercial-milestone">1.3<br>Prod Conv</th>
+                        <th class="commercial-milestone">1.4<br>Mesh+IG</th>
+                        <th class="commercial-milestone">1.5<br>Traffic</th>
+                        <th class="commercial-milestone">1.6<br>Decommission</th>
+                        <th class="gia2h-milestone">2.1<br>Dev</th>
+                        <th class="gia2h-milestone">2.2<br>Pre-Prod</th>
+                        <th class="gia2h-milestone">2.3<br>Prod</th>
+                        <th class="gia2h-milestone">2.4<br>Decommission</th>
+                        <th class="blackjack-milestone">3.1<br>Dev</th>
+                        <th class="blackjack-milestone">3.2<br>Stage</th>
+                        <th class="blackjack-milestone">3.3<br>Prod</th>
+                    </tr>
+                </thead>
+            `;
+        }
+
+        function renderTableRow(team) {
+            const allMilestones = [
+                ...team.commercial,
+                ...team.gia2h,
+                ...team.blackjack
+            ];
+
+            const cells = allMilestones.map(m => `
+                <td class="${getCellClass(m.status)}">
+                    ${getCellContent(m)}
+                </td>
+            `).join('');
+
+            return `
+                <tr>
+                    <td class="team-name">${team.name}</td>
+                    ${cells}
+                </tr>
+            `;
+        }
+
+        function renderDashboard() {
+            const dashboard = document.getElementById('dashboard');
+
+            if (filteredTeams.length === 0) {
+                dashboard.innerHTML = `
+                    <div class="no-results">
+                        <h3>No teams found</h3>
+                        <p>Try adjusting your search</p>
+                    </div>
+                `;
+                return;
+            }
+
+            dashboard.innerHTML = `
+                <table class="migration-table">
+                    ${renderTableHeader()}
+                    <tbody>
+                        ${filteredTeams.map(team => renderTableRow(team)).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            filteredTeams = teams.filter(team => {
+                if (searchTerm && !team.name.toLowerCase().includes(searchTerm)) {
+                    return false;
+                }
+                return true;
+            });
+
+            renderDashboard();
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+        // Initial render
+        renderMetrics();
+        renderDashboard();
+    </script>
+</body>
+</html>

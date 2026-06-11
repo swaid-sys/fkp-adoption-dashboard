@@ -1,2578 +1,1132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STP: FKP Migration Dashboard - Outstanding Work</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px 40px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
-        .controls {
-            padding: 25px 40px;
-            background: #f8f9fa;
-            border-bottom: 2px solid #e9ecef;
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .search-box {
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 12px 20px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .metrics-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 30px 40px;
-            background: #f8f9fa;
-            border-bottom: 2px solid #e9ecef;
-        }
-
-        .metric-card {
-            background: white;
-            padding: 25px 20px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid #667eea;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .metric-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-        }
-
-        .metric-card.commercial {
-            border-left-color: #667eea;
-        }
-
-        .metric-card.gia2h {
-            border-left-color: #f093fb;
-        }
-
-        .metric-card.blackjack {
-            border-left-color: #4facfe;
-        }
-
-        .metric-number {
-            font-size: 3em;
-            font-weight: 800;
-            color: #2c3e50;
-            margin-bottom: 8px;
-            line-height: 1;
-        }
-
-        .metric-label {
-            font-size: 0.9em;
-            color: #6c757d;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .dashboard {
-            padding: 20px;
-            overflow-x: auto;
-        }
-
-        .migration-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9em;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            background: white;
-        }
-
-        .migration-table thead {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .migration-table th {
-            padding: 14px 10px;
-            text-align: center;
-            font-weight: 700;
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 0.8em;
-            line-height: 1.4;
-            min-width: 80px;
-        }
-
-        .migration-table th.team-col {
-            text-align: left;
-            position: sticky;
-            left: 0;
-            z-index: 20;
-            background: #2c3e50;
-            min-width: 220px;
-            max-width: 220px;
-        }
-
-        .migration-table th.env-header {
-            font-size: 0.95em;
-            padding: 16px 10px;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            font-weight: 800;
-        }
-
-        .migration-table th.commercial-header {
-            background: #667eea;
-        }
-
-        .migration-table th.gia2h-header {
-            background: #f093fb;
-        }
-
-        .migration-table th.blackjack-header {
-            background: #4facfe;
-        }
-
-        .migration-table th.commercial-milestone {
-            background: #5a6fd8;
-        }
-
-        .migration-table th.gia2h-milestone {
-            background: #e081f0;
-        }
-
-        .migration-table th.blackjack-milestone {
-            background: #3d9cec;
-        }
-
-        .migration-table tbody tr {
-            transition: background-color 0.2s;
-        }
-
-        .migration-table tbody tr:nth-child(even) {
-            background: #f8f9fa;
-        }
-
-        .migration-table tbody tr:hover {
-            background: #e7f1ff;
-        }
-
-        .migration-table td {
-            padding: 14px 10px;
-            text-align: center;
-            border: 1px solid #dee2e6;
-            vertical-align: middle;
-            font-size: 0.95em;
-        }
-
-        .migration-table td.team-name {
-            font-weight: 600;
-            text-align: left;
-            position: sticky;
-            left: 0;
-            background: inherit;
-            z-index: 5;
-            border-right: 2px solid #dee2e6;
-            font-size: 0.9em;
-        }
-
-        .migration-table tbody tr:nth-child(even) td.team-name {
-            background: #f8f9fa;
-        }
-
-        .migration-table tbody tr:hover td.team-name {
-            background: #e7f1ff;
-        }
-
-        .cell-complete {
-            background: #28a745;
-            color: white;
-            font-weight: 700;
-            font-size: 1.3em;
-        }
-
-        .cell-remaining {
-            background: white;
-            color: #667eea;
-            font-weight: 600;
-        }
-
-        .cell-na {
-            background: #e9ecef;
-            color: #adb5bd;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 60px 20px;
-            color: #6c757d;
-        }
-
-        .no-results h3 {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-        }
-
-        .legend {
-            display: flex;
-            gap: 30px;
-            padding: 20px 40px;
-            background: #f8f9fa;
-            border-top: 2px solid #e9ecef;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.95em;
-        }
-
-        .legend-box {
-            width: 40px;
-            height: 25px;
-            border-radius: 4px;
-            border: 1px solid #dee2e6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-        }
-
-        .legend-box.complete {
-            background: #28a745;
-            color: white;
-        }
-
-        .legend-box.remaining {
-            background: white;
-            color: #667eea;
-            border: 1px solid #667eea;
-        }
-
-        .legend-box.na {
-            background: #e9ecef;
-            color: #adb5bd;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8em;
-            }
-
-            .dashboard {
-                padding: 10px;
-            }
-
-            .migration-table {
-                font-size: 0.8em;
-            }
-
-            .migration-table th.team-col {
-                min-width: 180px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FKP Adoption Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3350;
+      --text: #e4e6f0;
+      --text-muted: #7b80a0;
+      --commercial: #4f9cf9;
+      --gia2h: #34d399;
+      --bja: #f97316;
+      --bjj: #a78bfa;
+      --goal: #ef4444;
+      --green: #34d399;
+      --yellow: #fbbf24;
+      --red: #f87171;
+      --blue: #60a5fa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .header {
+      background: linear-gradient(135deg, #1a1d27 0%, #12152a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 24px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: #fff;
+    }
+    .header p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .badge-red { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+    .badge-yellow { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+    .badge-green { background: rgba(52,211,153,0.12); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+    .main { max-width: 1280px; margin: 0 auto; padding: 32px 40px; }
+    /* KPI cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .kpi-card.commercial::before { background: var(--commercial); }
+    .kpi-card.gia2h::before { background: var(--gia2h); }
+    .kpi-card.bja::before { background: var(--bja); }
+    .kpi-card.bjj::before { background: var(--bjj); }
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .kpi-value {
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+    .kpi-card.commercial .kpi-value { color: var(--commercial); }
+    .kpi-card.gia2h .kpi-value { color: var(--gia2h); }
+    .kpi-card.bja .kpi-value { color: var(--bja); }
+    .kpi-card.bjj .kpi-value { color: var(--bjj); }
+    .kpi-meta {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .kpi-change {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+    .kpi-change.up { color: var(--green); }
+    .kpi-change.down { color: var(--red); }
+    .kpi-change.flat { color: var(--text-muted); }
+    /* Chart section */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .section-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+    .chart-wrap {
+      position: relative;
+      height: 380px;
+    }
+    /* Legend */
+    .legend {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 2px;
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 3px;
+      margin-bottom: 20px;
+      width: fit-content;
+    }
+    .tab {
+      padding: 7px 16px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tab.active {
+      background: var(--surface2);
+      color: var(--text);
+    }
+    .tab:hover:not(.active) { color: var(--text); }
+    /* Tables */
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead tr {
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    td {
+      padding: 11px 14px;
+      border-bottom: 1px solid rgba(46,51,80,0.5);
+      color: var(--text);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .num { font-variant-numeric: tabular-nums; font-weight: 600; }
+    .pct-commercial { color: var(--commercial); }
+    .pct-gia2h { color: var(--gia2h); }
+    .pct-bja { color: var(--bja); }
+    .pct-bjj { color: var(--bjj); }
+    .delta-pos { color: var(--green); }
+    .delta-neg { color: var(--red); }
+    .delta-zero { color: var(--text-muted); }
+    .status-chip {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .status-on-track { background: rgba(52,211,153,0.12); color: #34d399; }
+    .status-at-risk  { background: rgba(251,191,36,0.12); color: #fbbf24; }
+    .status-off-track{ background: rgba(239,68,68,0.12); color: #f87171; }
+    /* Projection bar */
+    .proj-bar-wrap { display: flex; align-items: center; gap: 10px; }
+    .proj-bar-bg {
+      flex: 1;
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .proj-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+    .goal-line-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    /* Grid 2-col */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    /* Footnote */
+    .footnote {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 16px;
+      line-height: 1.7;
+    }
+    /* Responsive */
+    @media (max-width: 900px) {
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .main { padding: 20px; }
+      .header { padding: 16px 20px; flex-direction: column; align-items: flex-start; gap: 12px; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🚀 STP: FKP Migration - Outstanding Work</h1>
-            <p>Service Teams with Remaining Milestones</p>
-        </div>
 
-        <div class="controls">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="🔍 Search teams..." />
-            </div>
-        </div>
+<header class="header">
+  <div>
+    <h1>FKP Adoption Dashboard</h1>
+    <p>Hyperforce Runtime Platform · FY27 Migration Progress · Last report: June 11, 2026</p>
+  </div>
+  <span class="badge badge-red">🔴 OFF TRACK — Projected 90%+ by end-FY27</span>
+</header>
 
-        <div class="dashboard" id="dashboard"></div>
+<main class="main">
 
-        <div class="legend">
-            <div class="legend-item">
-                <div class="legend-box complete">✓</div>
-                <span><strong>Completed</strong></span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box remaining">R###</div>
-                <span><strong>Remaining</strong> (Target Release)</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box na">-</div>
-                <span><strong>Not Applicable</strong></span>
-            </div>
-        </div>
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div class="kpi-card commercial">
+      <div class="kpi-label">Commercial</div>
+      <div class="kpi-value">76.5%</div>
+      <div class="kpi-meta">Q4 FY27 proj: 96.2%</div>
+      <div class="kpi-change up">▲ +0.8% since May 26</div>
     </div>
+    <div class="kpi-card gia2h">
+      <div class="kpi-label">GovCloud (Gia2h)</div>
+      <div class="kpi-value">75.1%</div>
+      <div class="kpi-meta">Q4 FY27 proj: 90.2%</div>
+      <div class="kpi-change down">▼ −0.6% since May 26</div>
+    </div>
+    <div class="kpi-card bja">
+      <div class="kpi-label">Blackjack-A</div>
+      <div class="kpi-value">44.7%</div>
+      <div class="kpi-meta">Q4 FY27 proj: 78.9%</div>
+      <div class="kpi-change up">▲ +2.1% since May 26</div>
+    </div>
+    <div class="kpi-card bjj">
+      <div class="kpi-label">Blackjack-J</div>
+      <div class="kpi-value">82.5%</div>
+      <div class="kpi-meta">Q4 FY27 proj: 93.6%</div>
+      <div class="kpi-change up">▲ +0.9% since May 26</div>
+    </div>
+  </div>
 
-    <script>
-const teams = [
+  <!-- Main Chart -->
+  <div class="section">
+    <div class="section-title">FKP Adoption Rate Over Time</div>
+    <div class="section-sub">All environments · Dashed line marks 100% FY27 goal · Blackjack-J data available from May 2026</div>
+    <div class="chart-wrap">
+      <canvas id="mainChart"></canvas>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--commercial)"></div>Commercial</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--gia2h)"></div>GovCloud (Gia2h)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--bja)"></div>Blackjack-A</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--bjj)"></div>Blackjack-J</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--goal);border-radius:2px;width:18px;height:3px;margin-top:4px"></div>100% Goal</div>
+    </div>
+  </div>
+
+  <!-- Projection Chart + Q2/Q4 bars -->
+  <div class="grid-2">
+    <div class="section">
+      <div class="section-title">Q2 FY27 Projections</div>
+      <div class="section-sub">From most recent report (June 11, 2026)</div>
+      <table>
+        <thead><tr><th>Environment</th><th>Current</th><th>Q2 Proj.</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Commercial</td>
+            <td class="num pct-commercial">76.5%</td>
+            <td class="num">77.2%</td>
+          </tr>
+          <tr>
+            <td>GovCloud (Gia2h)</td>
+            <td class="num pct-gia2h">75.1%</td>
+            <td class="num">77.1%</td>
+          </tr>
+          <tr>
+            <td>Blackjack-A</td>
+            <td class="num pct-bja">44.7%</td>
+            <td class="num">49.7%</td>
+          </tr>
+          <tr>
+            <td>Blackjack-J</td>
+            <td class="num pct-bjj">82.5%</td>
+            <td class="num">82.5%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">Q4 FY27 Projections (End-of-Year)</div>
+      <div class="section-sub">From most recent report (June 11, 2026)</div>
+      <table>
+        <thead><tr><th>Environment</th><th>Current</th><th>Q4 Proj.</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Commercial</td>
+            <td class="num pct-commercial">76.5%</td>
+            <td class="num">96.2%</td>
+            <td><span class="status-chip status-at-risk">🟡 At Risk</span></td>
+          </tr>
+          <tr>
+            <td>GovCloud (Gia2h)</td>
+            <td class="num pct-gia2h">75.1%</td>
+            <td class="num">90.2%</td>
+            <td><span class="status-chip status-at-risk">🟡 At Risk</span></td>
+          </tr>
+          <tr>
+            <td>Blackjack-A</td>
+            <td class="num pct-bja">44.7%</td>
+            <td class="num">78.9%</td>
+            <td><span class="status-chip status-off-track">🔴 Off Track</span></td>
+          </tr>
+          <tr>
+            <td>Blackjack-J</td>
+            <td class="num pct-bjj">82.5%</td>
+            <td class="num">93.6%</td>
+            <td><span class="status-chip status-at-risk">🟡 At Risk</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Projection Trend Charts -->
+  <div class="section">
+    <div class="section-title">Projection Trends Over Time</div>
+    <div class="section-sub">How Q2 and Q4 FY27 projections have changed across recent reports — shows forecast confidence</div>
+    <div class="grid-2">
+      <div class="chart-wrap" style="height:320px;">
+        <canvas id="q2ProjectionChart"></canvas>
+      </div>
+      <div class="chart-wrap" style="height:320px;">
+        <canvas id="q4ProjectionChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Historical Data Table -->
+  <div class="section">
+    <div class="section-title">Historical Adoption Data</div>
+    <div class="section-sub">All figures taken from the primary report email on each date. Δ = change vs. previous report. Blackjack-J data first reported May 7, 2026.</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Report Date</th>
+            <th>Commercial</th>
+            <th>Δ</th>
+            <th>GovCloud (Gia2h)</th>
+            <th>Δ</th>
+            <th>Blackjack-A</th>
+            <th>Δ</th>
+            <th>Blackjack-J</th>
+            <th>Δ</th>
+          </tr>
+        </thead>
+        <tbody id="historyTableBody">
+        </tbody>
+      </table>
+    </div>
+    <p class="footnote">
+      * Blackjack-A figures are Stage-environment metrics (Prod metrics not available). Blackjack-J figures are also Stage-environment.<br>
+      ** GovCloud Gia2h figures exclude Blackjack. Dec 5 &amp; Dec 19 2025 used the "GIA2H" label in those reports.<br>
+      *** Mar 11 2026 BJ-A spike (46.6%) then reversal to 43.3% reflects denominator changes as new services were registered.
+    </p>
+  </div>
+
+  <!-- Org-level Breakdown (latest) -->
+  <div class="section">
+    <div class="section-title">Org-Level FKP Adoption — Latest Report (June 11, 2026)</div>
+    <div class="section-sub">Commercial and GovCloud (Gia2h) per-org current adoption percentages.</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Org</th>
+            <th>Executive Owner</th>
+            <th>Commercial</th>
+            <th>GovCloud (Gia2h)</th>
+            <th>Key Milestone</th>
+            <th>Target</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Security</td>
+            <td>Iain Mulholland</td>
+            <td class="num pct-commercial">100%</td>
+            <td class="num pct-gia2h">98.3%</td>
+            <td>Migrate SAI-Gateway &amp; Tentacle (GovCloud)</td>
+            <td>FY27 Q3</td>
+            <td><span class="status-chip status-off-track">🔴 Blocked</span></td>
+          </tr>
+          <tr>
+            <td>Availability</td>
+            <td>Darryn Dieken</td>
+            <td class="num pct-commercial">57.0%</td>
+            <td class="num pct-gia2h">47.5%</td>
+            <td>Migrate Flowsnake in Commercial</td>
+            <td>FY27 Q4</td>
+            <td><span class="status-chip status-on-track">🟢 On Track</span></td>
+          </tr>
+          <tr>
+            <td>Marketing Cloud</td>
+            <td>Ramesh Ragineni</td>
+            <td class="num pct-commercial">94.2%</td>
+            <td class="num pct-gia2h">100%</td>
+            <td>Deprecate 27 legacy EKS services</td>
+            <td>FY27 Q2</td>
+            <td><span class="status-chip status-on-track">🟢 On Track</span></td>
+          </tr>
+          <tr>
+            <td>Service Cloud</td>
+            <td>Yacov Salomon</td>
+            <td class="num pct-commercial">89.5%</td>
+            <td class="num pct-gia2h">100%</td>
+            <td>Migrate Thunderbird services (Commercial)</td>
+            <td>FY27 Q3</td>
+            <td><span class="status-chip status-on-track">🟢 On Track</span></td>
+          </tr>
+          <tr>
+            <td>Data Cloud</td>
+            <td>Raveendrnathan Loganathan</td>
+            <td class="num pct-commercial">2.9%</td>
+            <td class="num pct-gia2h">1.2%</td>
+            <td>Migrate CDP Control Plane (Commercial &amp; GovCloud)</td>
+            <td>FY27 Q4</td>
+            <td><span class="status-chip status-at-risk">🟡 At Risk</span></td>
+          </tr>
+          <tr>
+            <td>Analytics Cloud</td>
+            <td>Sireesh Bodireddygari</td>
+            <td class="num pct-commercial">98.0%</td>
+            <td class="num pct-gia2h">100%</td>
+            <td>Migrate Einstein Analytics in Commercial</td>
+            <td>FY27 Q2</td>
+            <td><span class="status-chip status-on-track">🟢 On Track</span></td>
+          </tr>
+          <tr>
+            <td>AI Cloud</td>
+            <td>Jayesh Govindarajan</td>
+            <td class="num pct-commercial">83.0%</td>
+            <td class="num pct-gia2h">79.6%</td>
+            <td>Decommission legacy EKS clusters</td>
+            <td>FY27 Q2</td>
+            <td><span class="status-chip status-on-track">🟢 On Track</span></td>
+          </tr>
+          <tr>
+            <td>Salesforce Trust Platform</td>
+            <td>Herman Kwong</td>
+            <td class="num pct-commercial">71.2%</td>
+            <td class="num pct-gia2h">51.1%</td>
+            <td>Migrate IAM, KMS, NetSec, PKI, Vault (GovCloud)</td>
+            <td>FY27 Q3</td>
+            <td><span class="status-chip status-at-risk">🟡 At Risk</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- BJ-A Detail + Velocity -->
+  <div class="grid-2">
+    <div class="section">
+      <div class="section-title">Blackjack-A — Critical Blockers</div>
+      <div class="section-sub">Primary obstacles to FY27 adoption target (June 11, 2026)</div>
+      <table>
+        <thead><tr><th>Blocker</th><th>Owner</th><th>ETA</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>FIT migration timeline (Blackjack-A)</td>
+            <td>Kedar Doshi (RADX)</td>
+            <td>End-R264</td>
+            <td><span class="status-chip status-off-track">🔴 TBD</span></td>
+          </tr>
+          <tr>
+            <td>JIT timeline (Blackjack-A)</td>
+            <td>Herman Kwong (STP)</td>
+            <td>End-R264</td>
+            <td><span class="status-chip status-off-track">🔴 TBD</span></td>
+          </tr>
+          <tr>
+            <td>PRA timeline (Blackjack-A)</td>
+            <td>Herman Kwong (STP)</td>
+            <td>End-R264</td>
+            <td><span class="status-chip status-off-track">🔴 TBD</span></td>
+          </tr>
+          <tr>
+            <td>Private Connect (Commercial &amp; GovCloud)</td>
+            <td>Herman Kwong (STP)</td>
+            <td>End-R264</td>
+            <td><span class="status-chip status-off-track">🔴 TBD</span></td>
+          </tr>
+          <tr>
+            <td>CDP Control Plane (GovCloud)</td>
+            <td>Raveendrnathan Loganathan</td>
+            <td>End-R266</td>
+            <td><span class="status-chip status-at-risk">🟡 TBD</span></td>
+          </tr>
+          <tr>
+            <td>MonCloud FY28 slip (CWME, Funnel, Splunk)</td>
+            <td>Kedar Doshi (MonCloud)</td>
+            <td>End-R264</td>
+            <td><span class="status-chip status-off-track">🔴 Extends to FY28</span></td>
+          </tr>
+          <tr>
+            <td>Public Proxy acceleration (FY28→FY27)</td>
+            <td>Herman Kwong (STP)</td>
+            <td>End-R264</td>
+            <td><span class="status-chip status-off-track">🔴 POC in progress</span></td>
+          </tr>
+          <tr>
+            <td>Security / AST SStage cluster (BJ-A)</td>
+            <td>Gautam Bhatia (AAG Infra)</td>
+            <td>End-R264</td>
+            <td><span class="status-chip status-off-track">🔴 Blocked 3mo+</span></td>
+          </tr>
+          <tr>
+            <td>Foundation SStage cluster (BJ-A)</td>
+            <td>Gautam Bhatia (AAG Infra)</td>
+            <td>End-R264</td>
+            <td><span class="status-chip status-off-track">🔴 Blocked 2mo+</span></td>
+          </tr>
+          <tr>
+            <td>Decommission bottleneck (~120 services)</td>
+            <td>Shan Appajodu (RADX)</td>
+            <td>End-R266</td>
+            <td><span class="status-chip status-off-track">🔴 Multi-month backlog</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">Period-over-Period Velocity</div>
+      <div class="section-sub">Percentage point change per reporting period</div>
+      <div class="chart-wrap" style="height:240px;">
+        <canvas id="velocityChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const reports = [
+  { date: '2025-12-05', label: 'Dec 5',  commercial: 71.07, gia2h: 70.57, bja: 37.5,  bjj: null },
+  { date: '2025-12-19', label: 'Dec 19', commercial: 71.3,  gia2h: 70.01, bja: 37.4,  bjj: null },
+  { date: '2026-01-22', label: 'Jan 22', commercial: 70.81, gia2h: 70.56, bja: 37.4,  bjj: null },
+  { date: '2026-02-06', label: 'Feb 6',  commercial: 73.3,  gia2h: 73.3,  bja: 38.4,  bjj: null },
+  { date: '2026-02-23', label: 'Feb 23', commercial: 72.7,  gia2h: 73.3,  bja: 38.4,  bjj: null },
+  { date: '2026-03-11', label: 'Mar 11', commercial: 73.2,  gia2h: 74.5,  bja: 46.6,  bjj: null },
+  { date: '2026-04-02', label: 'Apr 2',  commercial: 73.3,  gia2h: 74.4,  bja: 43.3,  bjj: null },
+  { date: '2026-04-22', label: 'Apr 22', commercial: 74.4,  gia2h: 74.3,  bja: 43.3,  bjj: null },
+  { date: '2026-05-07', label: 'May 7',  commercial: 75.1,  gia2h: 74.4,  bja: 43.3,  bjj: 81.5 },
+  { date: '2026-05-26', label: 'May 26', commercial: 75.7,  gia2h: 75.7,  bja: 42.6,  bjj: 81.6 },
+  { date: '2026-06-11', label: 'Jun 11', commercial: 76.5,  gia2h: 75.1,  bja: 44.7,  bjj: 82.5 },
+];
+
+// ─── HISTORY TABLE ───────────────────────────────────────────────────────────
+const tbody = document.getElementById('historyTableBody');
+
+function fmtDelta(curr, prev) {
+  if (prev === null || curr === null) return '<span class="delta-zero">—</span>';
+  const d = (curr - prev).toFixed(1);
+  if (d > 0) return `<span class="delta-pos">▲ +${d}%</span>`;
+  if (d < 0) return `<span class="delta-neg">▼ ${d}%</span>`;
+  return '<span class="delta-zero">—</span>';
+}
+
+reports.forEach((r, i) => {
+  const prev = i > 0 ? reports[i-1] : null;
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td>${new Date(r.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td>
+    <td class="num pct-commercial">${r.commercial}%</td>
+    <td>${prev ? fmtDelta(r.commercial, prev.commercial) : '<span class="delta-zero">—</span>'}</td>
+    <td class="num pct-gia2h">${r.gia2h}%</td>
+    <td>${prev ? fmtDelta(r.gia2h, prev.gia2h) : '<span class="delta-zero">—</span>'}</td>
+    <td class="num pct-bja">${r.bja}%</td>
+    <td>${prev ? fmtDelta(r.bja, prev.bja) : '<span class="delta-zero">—</span>'}</td>
+    <td class="num pct-bjj">${r.bjj !== null ? r.bjj + '%' : '<span style="color:var(--text-muted)">N/A</span>'}</td>
+    <td>${prev ? fmtDelta(r.bjj, prev.bjj) : '<span class="delta-zero">—</span>'}</td>
+  `;
+  tbody.appendChild(row);
+});
+
+// ─── MAIN CHART ──────────────────────────────────────────────────────────────
+const labels = reports.map(r => r.label);
+
+const mainCtx = document.getElementById('mainChart').getContext('2d');
+new Chart(mainCtx, {
+  type: 'line',
+  data: {
+    labels,
+    datasets: [
+      {
+        label: 'Commercial',
+        data: reports.map(r => r.commercial),
+        borderColor: '#4f9cf9',
+        backgroundColor: 'rgba(79,156,249,0.08)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#4f9cf9',
+        tension: 0.35,
+        fill: false,
+      },
+      {
+        label: 'Gia2h',
+        data: reports.map(r => r.gia2h),
+        borderColor: '#34d399',
+        backgroundColor: 'rgba(52,211,153,0.08)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#34d399',
+        tension: 0.35,
+        fill: false,
+      },
+      {
+        label: 'Blackjack-A',
+        data: reports.map(r => r.bja),
+        borderColor: '#f97316',
+        backgroundColor: 'rgba(249,115,22,0.08)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#f97316',
+        tension: 0.35,
+        fill: false,
+      },
+      {
+        label: 'Blackjack-J',
+        data: reports.map(r => r.bjj),
+        borderColor: '#a78bfa',
+        backgroundColor: 'rgba(167,139,250,0.08)',
+        borderWidth: 2.5,
+        pointRadius: r => r.raw !== null ? 5 : 0,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#a78bfa',
+        tension: 0.35,
+        fill: false,
+        spanGaps: false,
+      },
+      {
+        label: '100% Goal',
+        data: reports.map(() => 100),
+        borderColor: 'rgba(239,68,68,0.6)',
+        borderWidth: 1.5,
+        borderDash: [6, 4],
+        pointRadius: 0,
+        fill: false,
+        tension: 0,
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#1a1d27',
+        borderColor: '#2e3350',
+        borderWidth: 1,
+        titleColor: '#e4e6f0',
+        bodyColor: '#7b80a0',
+        padding: 12,
+        callbacks: {
+          label: ctx => {
+            if (ctx.raw === null) return null;
+            return ` ${ctx.dataset.label}: ${ctx.raw}%`;
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        grid: { color: 'rgba(46,51,80,0.5)', drawBorder: false },
+        ticks: { color: '#7b80a0', font: { size: 12 } },
+      },
+      y: {
+        min: 30,
+        max: 100,
+        grid: { color: 'rgba(46,51,80,0.5)', drawBorder: false },
+        ticks: {
+          color: '#7b80a0',
+          font: { size: 12 },
+          callback: v => v + '%',
+        },
+      },
+    },
+  },
+});
+
+// ─── VELOCITY CHART ──────────────────────────────────────────────────────────
+const velocityLabels = reports.slice(1).map(r => r.label);
+function velocity(field) {
+  return reports.slice(1).map((r, i) => {
+    const prev = reports[i];
+    if (r[field] === null || prev[field] === null) return null;
+    return +(r[field] - prev[field]).toFixed(2);
+  });
+}
+
+const velCtx = document.getElementById('velocityChart').getContext('2d');
+new Chart(velCtx, {
+  type: 'bar',
+  data: {
+    labels: velocityLabels,
+    datasets: [
+      {
+        label: 'Commercial',
+        data: velocity('commercial'),
+        backgroundColor: 'rgba(79,156,249,0.7)',
+        borderRadius: 3,
+        borderSkipped: false,
+      },
+      {
+        label: 'GovCloud',
+        data: velocity('gia2h'),
+        backgroundColor: 'rgba(52,211,153,0.7)',
+        borderRadius: 3,
+        borderSkipped: false,
+      },
+      {
+        label: 'BJ-A',
+        data: velocity('bja'),
+        backgroundColor: 'rgba(249,115,22,0.7)',
+        borderRadius: 3,
+        borderSkipped: false,
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: {
+        display: true,
+        labels: { color: '#7b80a0', font: { size: 11 }, boxWidth: 10, boxHeight: 10 },
+      },
+      tooltip: {
+        backgroundColor: '#1a1d27',
+        borderColor: '#2e3350',
+        borderWidth: 1,
+        titleColor: '#e4e6f0',
+        bodyColor: '#7b80a0',
+        callbacks: {
+          label: ctx => {
+            if (ctx.raw === null) return null;
+            const prefix = ctx.raw >= 0 ? '+' : '';
+            return ` ${ctx.dataset.label}: ${prefix}${ctx.raw}pp`;
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { color: '#7b80a0', font: { size: 10 } },
+      },
+      y: {
+        grid: { color: 'rgba(46,51,80,0.5)', drawBorder: false },
+        ticks: {
+          color: '#7b80a0',
+          font: { size: 11 },
+          callback: v => (v >= 0 ? '+' : '') + v + 'pp',
+        },
+      },
+    },
+  },
+});
+
+// ─── PROJECTION TREND CHARTS ─────────────────────────────────────────────
+const projectionHistory = [
   {
-    "name": "Analysis & Reporting / VDP",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "complete",
-        "release": 244
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "complete",
-        "release": 244
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "remaining",
-        "release": 264
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "na",
-        "release": null
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "na",
-        "release": null
-      }
-    ]
+    date: '2026-03-11',
+    label: 'Mar 11',
+    q2: { commercial: 79.4, gia2h: 83.2, bja: 69.0, bjj: null },
+    q4: { commercial: 95.9, gia2h: 90.8, bja: 92.1, bjj: null }
   },
   {
-    "name": "C4SSH",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "complete",
-        "release": 254
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "complete",
-        "release": 258
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "complete",
-        "release": 258
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "remaining",
-        "release": 262
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "remaining",
-        "release": 266
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "na",
-        "release": null
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "remaining",
-        "release": 266
-      }
-    ]
+    date: '2026-04-02',
+    label: 'Apr 2',
+    q2: { commercial: 79.5, gia2h: 83.1, bja: 69.0, bjj: null },
+    q4: { commercial: 95.9, gia2h: 90.6, bja: 92.0, bjj: null }
   },
   {
-    "name": "Discovery & Inventory",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "complete",
-        "release": 248
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "remaining",
-        "release": 264
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "na",
-        "release": null
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "na",
-        "release": null
-      }
-    ]
+    date: '2026-04-22',
+    label: 'Apr 22',
+    q2: { commercial: 80.1, gia2h: 82.8, bja: 69.0, bjj: null },
+    q4: { commercial: 95.9, gia2h: 90.2, bja: 92.0, bjj: null }
   },
   {
-    "name": "Edge Application Delivery",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "na",
-        "release": 264
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "remaining",
-        "release": 268
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "remaining",
-        "release": 268
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "remaining",
-        "release": 268
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "remaining",
-        "release": 268
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "remaining",
-        "release": 268
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "na",
-        "release": null
-      }
-    ]
+    date: '2026-05-07',
+    label: 'May 7',
+    q2: { commercial: 77.8, gia2h: 78.9, bja: 48.7, bjj: 81.5 },
+    q4: { commercial: 95.9, gia2h: 90.1, bja: 75.4, bjj: 91.1 }
   },
   {
-    "name": "Egress Gateway",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "remaining",
-        "release": 268
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "remaining",
-        "release": 268
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "remaining",
-        "release": 268
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "remaining",
-        "release": 268
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "remaining",
-        "release": 270
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "remaining",
-        "release": 270
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "remaining",
-        "release": 270
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "remaining",
-        "release": 270
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "remaining",
-        "release": 272
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "remaining",
-        "release": 272
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "remaining",
-        "release": 272
-      }
-    ]
+    date: '2026-05-26',
+    label: 'May 26',
+    q2: { commercial: 77.8, gia2h: 78.6, bja: 47.9, bjj: 81.6 },
+    q4: { commercial: 96.1, gia2h: 90.9, bja: 78.1, bjj: 92.6 }
   },
   {
-    "name": "JIT (Data Plane)",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "complete",
-        "release": 250
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "complete",
-        "release": 262
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "remaining",
-        "release": 266
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "remaining",
-        "release": null
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "remaining",
-        "release": null
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "remaining",
-        "release": null
-      }
-    ]
-  },
-  {
-    "name": "KMS",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "complete",
-        "release": 244
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "complete",
-        "release": 248
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "complete",
-        "release": 254
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "complete",
-        "release": 250
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "complete",
-        "release": 252
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "complete",
-        "release": 252
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "complete",
-        "release": 252
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "complete",
-        "release": 260
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "remaining",
-        "release": 264
-      }
-    ]
-  },
-  {
-    "name": "Kerberos",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "complete",
-        "release": 258
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "remaining",
-        "release": 264
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "remaining",
-        "release": 266
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "na",
-        "release": null
-      }
-    ]
-  },
-  {
-    "name": "LIME",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "complete",
-        "release": 258
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "remaining",
-        "release": 262
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "remaining",
-        "release": 262
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "remaining",
-        "release": 264
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "complete",
-        "release": 262
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "remaining",
-        "release": 264
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "na",
-        "release": null
-      }
-    ]
-  },
-  {
-    "name": "Matlock",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "complete",
-        "release": 256
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "complete",
-        "release": 258
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "complete",
-        "release": 262
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "remaining",
-        "release": 264
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "remaining",
-        "release": 266
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "na",
-        "release": null
-      }
-    ]
-  },
-  {
-    "name": "NetSec - Falcon Platform Services (FPS)",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "complete",
-        "release": 244
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "complete",
-        "release": 244
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "complete",
-        "release": 248
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "remaining",
-        "release": 262
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "remaining",
-        "release": 262
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "remaining",
-        "release": 262
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "na",
-        "release": null
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "remaining",
-        "release": 266
-      }
-    ]
-  },
-  {
-    "name": "NetSec - L7 Firewall",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "remaining",
-        "release": 266
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "complete",
-        "release": 262
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "complete",
-        "release": 262
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "complete",
-        "release": 262
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "na",
-        "release": null
-      }
-    ]
-  },
-  {
-    "name": "PKI",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "complete",
-        "release": 244
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "complete",
-        "release": 250
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "complete",
-        "release": 252
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "remaining",
-        "release": 266
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "complete",
-        "release": 254
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "remaining",
-        "release": 266
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "remaining",
-        "release": 266
-      }
-    ]
-  },
-  {
-    "name": "PRA",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "complete",
-        "release": 244
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "complete",
-        "release": 250
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "complete",
-        "release": 250
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "remaining",
-        "release": 264
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "complete",
-        "release": 256
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "remaining",
-        "release": 264
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "remaining",
-        "release": null
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "remaining",
-        "release": null
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "remaining",
-        "release": null
-      }
-    ]
-  },
-  {
-    "name": "QuantumK",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "complete",
-        "release": 244
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "complete",
-        "release": 248
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "complete",
-        "release": 250
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "remaining",
-        "release": 266
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "complete",
-        "release": 256
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "complete",
-        "release": 262
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "complete",
-        "release": 262
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "remaining",
-        "release": 264
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "remaining",
-        "release": 266
-      }
-    ]
-  },
-  {
-    "name": "Salesforce Asset Inventory",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "complete",
-        "release": 248
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "complete",
-        "release": 248
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "complete",
-        "release": 252
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "complete",
-        "release": 248
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "complete",
-        "release": 248
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "complete",
-        "release": 254
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "complete",
-        "release": 258
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "complete",
-        "release": 262
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "remaining",
-        "release": 264
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "na",
-        "release": null
-      }
-    ]
-  },
-  {
-    "name": "Salesforce Private Connect",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "remaining",
-        "release": null
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "remaining",
-        "release": null
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "remaining",
-        "release": null
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "remaining",
-        "release": null
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "remaining",
-        "release": null
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "remaining",
-        "release": null
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "remaining",
-        "release": null
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "remaining",
-        "release": null
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "remaining",
-        "release": null
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "na",
-        "release": null
-      }
-    ]
-  },
-  {
-    "name": "SecDS",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "remaining",
-        "release": 270
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "remaining",
-        "release": 272
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "na",
-        "release": null
-      }
-    ]
-  },
-  {
-    "name": "SecIAMSvc",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "complete",
-        "release": 250
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "complete",
-        "release": 250
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "complete",
-        "release": 252
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "complete",
-        "release": 258
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "remaining",
-        "release": 270
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "remaining",
-        "release": 272
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "na",
-        "release": null
-      }
-    ]
-  },
-  {
-    "name": "SecPortal",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "complete",
-        "release": 258
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "complete",
-        "release": 258
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "remaining",
-        "release": 264
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "remaining",
-        "release": 264
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "na",
-        "release": null
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "na",
-        "release": null
-      }
-    ]
-  },
-  {
-    "name": "Stride",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "complete",
-        "release": 244
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "complete",
-        "release": 260
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "complete",
-        "release": 254
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "remaining",
-        "release": 262
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "remaining",
-        "release": 264
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "remaining",
-        "release": 264
-      }
-    ]
-  },
-  {
-    "name": "Vault",
-    "commercial": [
-      {
-        "id": "1.0",
-        "name": "Dev Pilot POC",
-        "status": "complete",
-        "release": 244
-      },
-      {
-        "id": "1.1",
-        "name": "Dev FKP Conversion",
-        "status": "complete",
-        "release": 246
-      },
-      {
-        "id": "1.2",
-        "name": "Pre-Prod FKP Conversion",
-        "status": "complete",
-        "release": 248
-      },
-      {
-        "id": "1.3",
-        "name": "FKP Prod Conversion",
-        "status": "complete",
-        "release": 252
-      },
-      {
-        "id": "1.4",
-        "name": "Mesh+IG Onboarding",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "1.5",
-        "name": "Traffic Switching",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "1.6",
-        "name": "Commercial Decommission Complete",
-        "status": "complete",
-        "release": 254
-      }
-    ],
-    "gia2h": [
-      {
-        "id": "2.1",
-        "name": "Gia2h Dev",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "2.2",
-        "name": "Gia2h Pre-Prod",
-        "status": "complete",
-        "release": 260
-      },
-      {
-        "id": "2.3",
-        "name": "Gia2h Prod",
-        "status": "complete",
-        "release": 262
-      },
-      {
-        "id": "2.4",
-        "name": "Gia2h Decommission Complete",
-        "status": "remaining",
-        "release": 264
-      }
-    ],
-    "blackjack": [
-      {
-        "id": "3.1",
-        "name": "BJ-A Dev",
-        "status": "remaining",
-        "release": 264
-      },
-      {
-        "id": "3.2",
-        "name": "BJ-A Stage",
-        "status": "remaining",
-        "release": 266
-      },
-      {
-        "id": "3.3",
-        "name": "BJ-A Prod",
-        "status": "remaining",
-        "release": 266
-      }
-    ]
+    date: '2026-06-11',
+    label: 'Jun 11',
+    q2: { commercial: 77.2, gia2h: 77.1, bja: 49.7, bjj: 82.5 },
+    q4: { commercial: 96.2, gia2h: 90.2, bja: 78.9, bjj: 93.6 }
   }
 ];
 
-        let filteredTeams = [...teams];
+const projLabels = projectionHistory.map(p => p.label);
 
-        function getCellClass(status) {
-            if (status === 'complete') return 'cell-complete';
-            if (status === 'na') return 'cell-na';
-            return 'cell-remaining';
+// Q2 Projection Trend Chart
+const q2ProjCtx = document.getElementById('q2ProjectionChart').getContext('2d');
+new Chart(q2ProjCtx, {
+  type: 'line',
+  data: {
+    labels: projLabels,
+    datasets: [
+      {
+        label: 'Commercial',
+        data: projectionHistory.map(p => p.q2.commercial),
+        borderColor: '#4f9cf9',
+        backgroundColor: 'rgba(79,156,249,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#4f9cf9',
+        tension: 0.3,
+        fill: false,
+      },
+      {
+        label: 'Gia2h',
+        data: projectionHistory.map(p => p.q2.gia2h),
+        borderColor: '#34d399',
+        backgroundColor: 'rgba(52,211,153,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#34d399',
+        tension: 0.3,
+        fill: false,
+      },
+      {
+        label: 'Blackjack-A',
+        data: projectionHistory.map(p => p.q2.bja),
+        borderColor: '#f97316',
+        backgroundColor: 'rgba(249,115,22,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#f97316',
+        tension: 0.3,
+        fill: false,
+      },
+      {
+        label: 'Blackjack-J',
+        data: projectionHistory.map(p => p.q2.bjj),
+        borderColor: '#a78bfa',
+        backgroundColor: 'rgba(167,139,250,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#a78bfa',
+        tension: 0.3,
+        fill: false,
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: { color: '#e4e6f0', font: { size: 11 }, padding: 12, boxWidth: 12, boxHeight: 12 }
+      },
+      title: {
+        display: true,
+        text: 'Q2 FY27 Projections Over Time',
+        color: '#fff',
+        font: { size: 14, weight: '600' },
+        padding: { bottom: 16 }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(26,29,39,0.95)',
+        titleColor: '#e4e6f0',
+        bodyColor: '#e4e6f0',
+        borderColor: '#2e3350',
+        borderWidth: 1,
+        padding: 10,
+        displayColors: true,
+        callbacks: {
+          label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`
         }
+      }
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { color: '#7b80a0', font: { size: 11 } },
+      },
+      y: {
+        min: 40,
+        max: 85,
+        grid: { color: 'rgba(46,51,80,0.5)', drawBorder: false },
+        ticks: {
+          color: '#7b80a0',
+          font: { size: 11 },
+          callback: v => v + '%',
+        },
+      },
+    },
+  },
+});
 
-        function getCellContent(milestone) {
-            if (milestone.status === 'complete') {
-                return '✓';
-            } else if (milestone.status === 'na') {
-                return '-';
-            } else {
-                // Remaining - show release or TBD
-                return milestone.release ? `R${milestone.release}` : 'TBD';
+// Q4 Projection Trend Chart
+const q4ProjCtx = document.getElementById('q4ProjectionChart').getContext('2d');
+new Chart(q4ProjCtx, {
+  type: 'line',
+  data: {
+    labels: projLabels,
+    datasets: [
+      {
+        label: 'Commercial',
+        data: projectionHistory.map(p => p.q4.commercial),
+        borderColor: '#4f9cf9',
+        backgroundColor: 'rgba(79,156,249,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#4f9cf9',
+        tension: 0.3,
+        fill: false,
+      },
+      {
+        label: 'Gia2h',
+        data: projectionHistory.map(p => p.q4.gia2h),
+        borderColor: '#34d399',
+        backgroundColor: 'rgba(52,211,153,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#34d399',
+        tension: 0.3,
+        fill: false,
+      },
+      {
+        label: 'Blackjack-A',
+        data: projectionHistory.map(p => p.q4.bja),
+        borderColor: '#f97316',
+        backgroundColor: 'rgba(249,115,22,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#f97316',
+        tension: 0.3,
+        fill: false,
+      },
+      {
+        label: 'Blackjack-J',
+        data: projectionHistory.map(p => p.q4.bjj),
+        borderColor: '#a78bfa',
+        backgroundColor: 'rgba(167,139,250,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#a78bfa',
+        tension: 0.3,
+        fill: false,
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: { color: '#e4e6f0', font: { size: 11 }, padding: 12, boxWidth: 12, boxHeight: 12 }
+      },
+      title: {
+        display: true,
+        text: 'Q4 FY27 Projections Over Time',
+        color: '#fff',
+        font: { size: 14, weight: '600' },
+        padding: { bottom: 16 }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(26,29,39,0.95)',
+        titleColor: '#e4e6f0',
+        bodyColor: '#e4e6f0',
+        borderColor: '#2e3350',
+        borderWidth: 1,
+        padding: 10,
+        displayColors: true,
+        callbacks: {
+          label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`
+        }
+      },
+      annotation: {
+        annotations: {
+          goalLine: {
+            type: 'line',
+            yMin: 100,
+            yMax: 100,
+            borderColor: '#ef4444',
+            borderWidth: 2,
+            borderDash: [6, 6],
+            label: {
+              display: true,
+              content: '100% Goal',
+              position: 'end',
+              backgroundColor: 'rgba(239,68,68,0.1)',
+              color: '#ef4444',
+              font: { size: 10, weight: 'bold' }
             }
+          }
         }
-
-        function calculateMetrics() {
-            const metrics = {
-                totalTeams: teams.length,
-                commercialOutstanding: 0,
-                gia2hOutstanding: 0,
-                blackjackOutstanding: 0
-            };
-
-            teams.forEach(team => {
-                // Check if team has remaining work in each environment
-                const hasCommercialWork = team.commercial.some(m => m.status === 'remaining');
-                const hasGia2hWork = team.gia2h.some(m => m.status === 'remaining');
-                const hasBlackjackWork = team.blackjack.some(m => m.status === 'remaining');
-
-                if (hasCommercialWork) metrics.commercialOutstanding++;
-                if (hasGia2hWork) metrics.gia2hOutstanding++;
-                if (hasBlackjackWork) metrics.blackjackOutstanding++;
-            });
-
-            return metrics;
-        }
-
-        function renderMetrics() {
-            const metrics = calculateMetrics();
-            const metricsContainer = document.createElement('div');
-            metricsContainer.className = 'metrics-section';
-            metricsContainer.innerHTML = `
-                <div class="metric-card">
-                    <div class="metric-number">${metrics.totalTeams}</div>
-                    <div class="metric-label">Total Teams</div>
-                </div>
-                <div class="metric-card commercial">
-                    <div class="metric-number">${metrics.commercialOutstanding}</div>
-                    <div class="metric-label">Commercial Work Outstanding</div>
-                </div>
-                <div class="metric-card gia2h">
-                    <div class="metric-number">${metrics.gia2hOutstanding}</div>
-                    <div class="metric-label">Gia2h Work Outstanding</div>
-                </div>
-                <div class="metric-card blackjack">
-                    <div class="metric-number">${metrics.blackjackOutstanding}</div>
-                    <div class="metric-label">Blackjack-A Work Outstanding</div>
-                </div>
-            `;
-            
-            // Insert before dashboard
-            const dashboard = document.getElementById('dashboard');
-            dashboard.parentNode.insertBefore(metricsContainer, dashboard);
-        }
-
-        function renderTableHeader() {
-            return `
-                <thead>
-                    <tr>
-                        <th class="team-col" rowspan="2">Team</th>
-                        <th class="env-header commercial-header" colspan="7">Commercial</th>
-                        <th class="env-header gia2h-header" colspan="4">Gia2h</th>
-                        <th class="env-header blackjack-header" colspan="3">Blackjack-A</th>
-                    </tr>
-                    <tr>
-                        <th class="commercial-milestone">1.0<br>Dev POC</th>
-                        <th class="commercial-milestone">1.1<br>Dev FKP</th>
-                        <th class="commercial-milestone">1.2<br>Pre-Prod</th>
-                        <th class="commercial-milestone">1.3<br>Prod Conv</th>
-                        <th class="commercial-milestone">1.4<br>Mesh+IG</th>
-                        <th class="commercial-milestone">1.5<br>Traffic</th>
-                        <th class="commercial-milestone">1.6<br>Decommission</th>
-                        <th class="gia2h-milestone">2.1<br>Dev</th>
-                        <th class="gia2h-milestone">2.2<br>Pre-Prod</th>
-                        <th class="gia2h-milestone">2.3<br>Prod</th>
-                        <th class="gia2h-milestone">2.4<br>Decommission</th>
-                        <th class="blackjack-milestone">3.1<br>Dev</th>
-                        <th class="blackjack-milestone">3.2<br>Stage</th>
-                        <th class="blackjack-milestone">3.3<br>Prod</th>
-                    </tr>
-                </thead>
-            `;
-        }
-
-        function renderTableRow(team) {
-            const allMilestones = [
-                ...team.commercial,
-                ...team.gia2h,
-                ...team.blackjack
-            ];
-
-            const cells = allMilestones.map(m => `
-                <td class="${getCellClass(m.status)}">
-                    ${getCellContent(m)}
-                </td>
-            `).join('');
-
-            return `
-                <tr>
-                    <td class="team-name">${team.name}</td>
-                    ${cells}
-                </tr>
-            `;
-        }
-
-        function renderDashboard() {
-            const dashboard = document.getElementById('dashboard');
-
-            if (filteredTeams.length === 0) {
-                dashboard.innerHTML = `
-                    <div class="no-results">
-                        <h3>No teams found</h3>
-                        <p>Try adjusting your search</p>
-                    </div>
-                `;
-                return;
-            }
-
-            dashboard.innerHTML = `
-                <table class="migration-table">
-                    ${renderTableHeader()}
-                    <tbody>
-                        ${filteredTeams.map(team => renderTableRow(team)).join('')}
-                    </tbody>
-                </table>
-            `;
-        }
-
-        function applyFilters() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-
-            filteredTeams = teams.filter(team => {
-                if (searchTerm && !team.name.toLowerCase().includes(searchTerm)) {
-                    return false;
-                }
-                return true;
-            });
-
-            renderDashboard();
-        }
-
-        // Event listeners
-        document.getElementById('searchInput').addEventListener('input', applyFilters);
-
-        // Initial render
-        renderMetrics();
-        renderDashboard();
-    </script>
+      }
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { color: '#7b80a0', font: { size: 11 } },
+      },
+      y: {
+        min: 70,
+        max: 105,
+        grid: { color: 'rgba(46,51,80,0.5)', drawBorder: false },
+        ticks: {
+          color: '#7b80a0',
+          font: { size: 11 },
+          callback: v => v + '%',
+        },
+      },
+    },
+  },
+});
+</script>
 </body>
 </html>
