@@ -1,0 +1,241 @@
+{
+  "lastUpdated": "June 11, 2026",
+  "overallStatus": {
+    "badge": "red",
+    "text": "OFF TRACK — Projected 90%+ by end-FY27 (78% in Blackjack-A)"
+  },
+  "reports": [
+    { "date": "2025-12-05", "commercial": 71.07, "gia2h": 70.57, "bja": 37.5, "bjj": null },
+    { "date": "2025-12-19", "commercial": 71.3, "gia2h": 70.01, "bja": 37.4, "bjj": null },
+    { "date": "2026-01-22", "commercial": 70.81, "gia2h": 70.56, "bja": 37.4, "bjj": null },
+    { "date": "2026-02-06", "commercial": 73.3, "gia2h": 73.3, "bja": 38.4, "bjj": null },
+    { "date": "2026-02-23", "commercial": 72.7, "gia2h": 73.3, "bja": 38.4, "bjj": null },
+    { "date": "2026-03-11", "commercial": 73.2, "gia2h": 74.5, "bja": 46.6, "bjj": null },
+    { "date": "2026-04-02", "commercial": 73.3, "gia2h": 74.4, "bja": 43.3, "bjj": null },
+    { "date": "2026-04-22", "commercial": 74.4, "gia2h": 74.3, "bja": 43.3, "bjj": null },
+    { "date": "2026-05-07", "commercial": 75.1, "gia2h": 74.4, "bja": 43.3, "bjj": 81.5 },
+    { "date": "2026-05-26", "commercial": 75.7, "gia2h": 75.7, "bja": 42.6, "bjj": 81.6 },
+    { "date": "2026-06-11", "commercial": 76.5, "gia2h": 75.1, "bja": 44.7, "bjj": 82.5 }
+  ],
+  "currentInstances": {
+    "commercial": { "onFkp": 31944, "total": 42542 }
+  },
+  "projections": {
+    "q2": {
+      "commercial": 77.2,
+      "gia2h": 77.1,
+      "bja": 49.7,
+      "bjj": 82.5
+    },
+    "q4": {
+      "commercial": { "value": 96.2, "status": "at-risk" },
+      "gia2h": { "value": 90.2, "status": "at-risk" },
+      "bja": { "value": 78.9, "status": "off-track" },
+      "bjj": { "value": 93.6, "status": "at-risk" }
+    }
+  },
+  "projectionHistory": [
+    {
+      "date": "2026-05-07",
+      "label": "May 7",
+      "q2": {
+        "commercial": 77.8,
+        "gia2h": 78.9,
+        "bja": 48.7,
+        "bjj": 81.5
+      },
+      "q4": {
+        "commercial": 95.9,
+        "gia2h": 90.1,
+        "bja": 75.4,
+        "bjj": 91.1
+      }
+    },
+    {
+      "date": "2026-05-26",
+      "label": "May 26",
+      "q2": {
+        "commercial": 77.8,
+        "gia2h": 78.6,
+        "bja": 47.9,
+        "bjj": 81.6
+      },
+      "q4": {
+        "commercial": 96.1,
+        "gia2h": 90.9,
+        "bja": 78.1,
+        "bjj": 92.6
+      }
+    },
+    {
+      "date": "2026-06-11",
+      "label": "Jun 11",
+      "q2": {
+        "commercial": 77.2,
+        "gia2h": 77.1,
+        "bja": 49.7,
+        "bjj": 82.5
+      },
+      "q4": {
+        "commercial": 96.2,
+        "gia2h": 90.2,
+        "bja": 78.9,
+        "bjj": 93.6
+      }
+    }
+  ],
+  "orgs": [
+    {
+      "name": "Security",
+      "owner": "Iain Mulholland",
+      "commercial": 100,
+      "gia2h": 98.3,
+      "milestone": "Migrate SAI-Gateway & Tentacle (GovCloud)",
+      "target": "FY27 Q3",
+      "status": "off-track",
+      "statusLabel": "🔴 Blocked"
+    },
+    {
+      "name": "Availability",
+      "owner": "Darryn Dieken",
+      "commercial": 57.0,
+      "gia2h": 47.5,
+      "milestone": "Migrate Flowsnake in Commercial",
+      "target": "FY27 Q4",
+      "status": "on-track",
+      "statusLabel": "🟢 On Track"
+    },
+    {
+      "name": "Marketing Cloud",
+      "owner": "Ramesh Ragineni",
+      "commercial": 94.2,
+      "gia2h": 100,
+      "milestone": "Deprecate 27 legacy EKS services",
+      "target": "FY27 Q2",
+      "status": "on-track",
+      "statusLabel": "🟢 On Track"
+    },
+    {
+      "name": "Service Cloud",
+      "owner": "Yacov Salomon",
+      "commercial": 89.5,
+      "gia2h": 100,
+      "milestone": "Migrate Thunderbird services (Commercial)",
+      "target": "FY27 Q3",
+      "status": "on-track",
+      "statusLabel": "🟢 On Track"
+    },
+    {
+      "name": "Data Cloud",
+      "owner": "Raveendrnathan Loganathan",
+      "commercial": 2.9,
+      "gia2h": 1.2,
+      "milestone": "Migrate CDP Control Plane (Commercial & GovCloud)",
+      "target": "FY27 Q4",
+      "status": "at-risk",
+      "statusLabel": "🟡 At Risk"
+    },
+    {
+      "name": "Analytics Cloud",
+      "owner": "Sireesh Bodireddygari",
+      "commercial": 98.0,
+      "gia2h": 100,
+      "milestone": "Migrate Einstein Analytics in Commercial",
+      "target": "FY27 Q2",
+      "status": "on-track",
+      "statusLabel": "🟢 On Track"
+    },
+    {
+      "name": "AI Cloud",
+      "owner": "Jayesh Govindarajan",
+      "commercial": 83.0,
+      "gia2h": 79.6,
+      "milestone": "Decommission legacy EKS clusters",
+      "target": "FY27 Q2",
+      "status": "on-track",
+      "statusLabel": "🟢 On Track"
+    },
+    {
+      "name": "Salesforce Trust Platform",
+      "owner": "Herman Kwong",
+      "commercial": 71.2,
+      "gia2h": 51.1,
+      "milestone": "Migrate IAM, KMS, NetSec, PKI, Vault (GovCloud)",
+      "target": "FY27 Q3",
+      "status": "at-risk",
+      "statusLabel": "🟡 At Risk"
+    }
+  ],
+  "blockers": [
+    {
+      "blocker": "FIT migration timeline (Blackjack-A)",
+      "owner": "Kedar Doshi (RADX)",
+      "eta": "End-R264",
+      "status": "off-track",
+      "statusLabel": "🔴 TBD"
+    },
+    {
+      "blocker": "JIT timeline (Blackjack-A)",
+      "owner": "Herman Kwong (STP)",
+      "eta": "End-R264",
+      "status": "off-track",
+      "statusLabel": "🔴 TBD"
+    },
+    {
+      "blocker": "PRA timeline (Blackjack-A)",
+      "owner": "Herman Kwong (STP)",
+      "eta": "End-R264",
+      "status": "off-track",
+      "statusLabel": "🔴 TBD"
+    },
+    {
+      "blocker": "Private Connect timeline (Commercial & GovCloud)",
+      "owner": "Herman Kwong (STP)",
+      "eta": "End-R264",
+      "status": "off-track",
+      "statusLabel": "🔴 TBD"
+    },
+    {
+      "blocker": "CDP Control Plane timeline (GovCloud)",
+      "owner": "Raveendrnathan Loganathan (Data Cloud)",
+      "eta": "End-R266",
+      "status": "at-risk",
+      "statusLabel": "🟡 TBD"
+    },
+    {
+      "blocker": "MonCloud FY28 slip & mitigation plan",
+      "owner": "Kedar Doshi (MonCloud)",
+      "eta": "End-R264",
+      "status": "off-track",
+      "statusLabel": "🔴 CWME, Funnel, Splunk"
+    },
+    {
+      "blocker": "Public Proxy acceleration (FY28→FY27)",
+      "owner": "Herman Kwong (STP)",
+      "eta": "End-R264",
+      "status": "off-track",
+      "statusLabel": "🔴 POC in progress"
+    },
+    {
+      "blocker": "Security / AST SStage cluster (Blackjack-A)",
+      "owner": "Gautam Bhatia (AAG Infra)",
+      "eta": "End-R264",
+      "status": "off-track",
+      "statusLabel": "🔴 Blocked 3mo+"
+    },
+    {
+      "blocker": "Foundation SStage cluster (Blackjack-A)",
+      "owner": "Gautam Bhatia (AAG Infra)",
+      "eta": "End-R264",
+      "status": "off-track",
+      "statusLabel": "🔴 Blocked 2mo+"
+    },
+    {
+      "blocker": "Decommission bottleneck (~120 services)",
+      "owner": "Shan Appajodu (RADX)",
+      "eta": "End-R266",
+      "status": "off-track",
+      "statusLabel": "🔴 Multi-month backlog"
+    }
+  ]
+}

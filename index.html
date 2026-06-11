@@ -425,6 +425,20 @@
     </div>
   </div>
 
+  <!-- Projection Trend Charts -->
+  <div class="section">
+    <div class="section-title">Projection Trends Over Time</div>
+    <div class="section-sub">How Q2 and Q4 FY27 projections have changed across recent reports — shows forecast confidence</div>
+    <div class="grid-2">
+      <div class="chart-wrap" style="height:320px;">
+        <canvas id="q2ProjectionChart"></canvas>
+      </div>
+      <div class="chart-wrap" style="height:320px;">
+        <canvas id="q4ProjectionChart"></canvas>
+      </div>
+    </div>
+  </div>
+
   <!-- Historical Data Table -->
   <div class="section">
     <div class="section-title">Historical Adoption Data</div>
@@ -860,6 +874,260 @@ new Chart(velCtx, {
           color: '#7b80a0',
           font: { size: 11 },
           callback: v => (v >= 0 ? '+' : '') + v + 'pp',
+        },
+      },
+    },
+  },
+});
+
+// ─── PROJECTION TREND CHARTS ─────────────────────────────────────────────
+const projectionHistory = [
+  {
+    date: '2026-05-07',
+    label: 'May 7',
+    q2: { commercial: 77.8, gia2h: 78.9, bja: 48.7, bjj: 81.5 },
+    q4: { commercial: 95.9, gia2h: 90.1, bja: 75.4, bjj: 91.1 }
+  },
+  {
+    date: '2026-05-26',
+    label: 'May 26',
+    q2: { commercial: 77.8, gia2h: 78.6, bja: 47.9, bjj: 81.6 },
+    q4: { commercial: 96.1, gia2h: 90.9, bja: 78.1, bjj: 92.6 }
+  },
+  {
+    date: '2026-06-11',
+    label: 'Jun 11',
+    q2: { commercial: 77.2, gia2h: 77.1, bja: 49.7, bjj: 82.5 },
+    q4: { commercial: 96.2, gia2h: 90.2, bja: 78.9, bjj: 93.6 }
+  }
+];
+
+const projLabels = projectionHistory.map(p => p.label);
+
+// Q2 Projection Trend Chart
+const q2ProjCtx = document.getElementById('q2ProjectionChart').getContext('2d');
+new Chart(q2ProjCtx, {
+  type: 'line',
+  data: {
+    labels: projLabels,
+    datasets: [
+      {
+        label: 'Commercial',
+        data: projectionHistory.map(p => p.q2.commercial),
+        borderColor: '#4f9cf9',
+        backgroundColor: 'rgba(79,156,249,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#4f9cf9',
+        tension: 0.3,
+        fill: false,
+      },
+      {
+        label: 'GovCloud (Gia2h)',
+        data: projectionHistory.map(p => p.q2.gia2h),
+        borderColor: '#34d399',
+        backgroundColor: 'rgba(52,211,153,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#34d399',
+        tension: 0.3,
+        fill: false,
+      },
+      {
+        label: 'Blackjack-A',
+        data: projectionHistory.map(p => p.q2.bja),
+        borderColor: '#f97316',
+        backgroundColor: 'rgba(249,115,22,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#f97316',
+        tension: 0.3,
+        fill: false,
+      },
+      {
+        label: 'Blackjack-J',
+        data: projectionHistory.map(p => p.q2.bjj),
+        borderColor: '#a78bfa',
+        backgroundColor: 'rgba(167,139,250,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#a78bfa',
+        tension: 0.3,
+        fill: false,
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: { color: '#e4e6f0', font: { size: 11 }, padding: 12, boxWidth: 12, boxHeight: 12 }
+      },
+      title: {
+        display: true,
+        text: 'Q2 FY27 Projections Over Time',
+        color: '#fff',
+        font: { size: 14, weight: '600' },
+        padding: { bottom: 16 }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(26,29,39,0.95)',
+        titleColor: '#e4e6f0',
+        bodyColor: '#e4e6f0',
+        borderColor: '#2e3350',
+        borderWidth: 1,
+        padding: 10,
+        displayColors: true,
+        callbacks: {
+          label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { color: '#7b80a0', font: { size: 11 } },
+      },
+      y: {
+        min: 40,
+        max: 85,
+        grid: { color: 'rgba(46,51,80,0.5)', drawBorder: false },
+        ticks: {
+          color: '#7b80a0',
+          font: { size: 11 },
+          callback: v => v + '%',
+        },
+      },
+    },
+  },
+});
+
+// Q4 Projection Trend Chart
+const q4ProjCtx = document.getElementById('q4ProjectionChart').getContext('2d');
+new Chart(q4ProjCtx, {
+  type: 'line',
+  data: {
+    labels: projLabels,
+    datasets: [
+      {
+        label: 'Commercial',
+        data: projectionHistory.map(p => p.q4.commercial),
+        borderColor: '#4f9cf9',
+        backgroundColor: 'rgba(79,156,249,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#4f9cf9',
+        tension: 0.3,
+        fill: false,
+      },
+      {
+        label: 'GovCloud (Gia2h)',
+        data: projectionHistory.map(p => p.q4.gia2h),
+        borderColor: '#34d399',
+        backgroundColor: 'rgba(52,211,153,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#34d399',
+        tension: 0.3,
+        fill: false,
+      },
+      {
+        label: 'Blackjack-A',
+        data: projectionHistory.map(p => p.q4.bja),
+        borderColor: '#f97316',
+        backgroundColor: 'rgba(249,115,22,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#f97316',
+        tension: 0.3,
+        fill: false,
+      },
+      {
+        label: 'Blackjack-J',
+        data: projectionHistory.map(p => p.q4.bjj),
+        borderColor: '#a78bfa',
+        backgroundColor: 'rgba(167,139,250,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#a78bfa',
+        tension: 0.3,
+        fill: false,
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: { color: '#e4e6f0', font: { size: 11 }, padding: 12, boxWidth: 12, boxHeight: 12 }
+      },
+      title: {
+        display: true,
+        text: 'Q4 FY27 Projections Over Time',
+        color: '#fff',
+        font: { size: 14, weight: '600' },
+        padding: { bottom: 16 }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(26,29,39,0.95)',
+        titleColor: '#e4e6f0',
+        bodyColor: '#e4e6f0',
+        borderColor: '#2e3350',
+        borderWidth: 1,
+        padding: 10,
+        displayColors: true,
+        callbacks: {
+          label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`
+        }
+      },
+      annotation: {
+        annotations: {
+          goalLine: {
+            type: 'line',
+            yMin: 100,
+            yMax: 100,
+            borderColor: '#ef4444',
+            borderWidth: 2,
+            borderDash: [6, 6],
+            label: {
+              display: true,
+              content: '100% Goal',
+              position: 'end',
+              backgroundColor: 'rgba(239,68,68,0.1)',
+              color: '#ef4444',
+              font: { size: 10, weight: 'bold' }
+            }
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { color: '#7b80a0', font: { size: 11 } },
+      },
+      y: {
+        min: 70,
+        max: 105,
+        grid: { color: 'rgba(46,51,80,0.5)', drawBorder: false },
+        ticks: {
+          color: '#7b80a0',
+          font: { size: 11 },
+          callback: v => v + '%',
         },
       },
     },
