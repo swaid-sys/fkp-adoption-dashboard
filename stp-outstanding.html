@@ -364,8 +364,8 @@
                 <span><strong>Remaining</strong> (Target Release)</span>
             </div>
             <div class="legend-item">
-                <div class="legend-box na">-</div>
-                <span><strong>Not Applicable</strong></span>
+                <div class="legend-box na">TBD</div>
+                <span><strong>To Be Determined</strong></span>
             </div>
         </div>
     </div>
@@ -2153,7 +2153,7 @@ const teams = [
             if (milestone.status === 'complete') {
                 return '✓';
             } else if (milestone.status === 'na') {
-                return '-';
+                return 'TBD';
             } else {
                 // Remaining - show release or TBD
                 return milestone.release ? `R${milestone.release}` : 'TBD';
