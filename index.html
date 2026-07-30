@@ -360,15 +360,16 @@
   <!-- Main Chart -->
   <div class="section">
     <div class="section-title">FKP Adoption Rate Over Time</div>
-    <div class="section-sub">All environments · Dashed line marks 100% FY27 goal · Blackjack-J data available from May 2026</div>
+    <div class="section-sub">All environments · Dashed red line marks 100% FY27 goal · Blackjack-J data available from May 2026 · Overall data available from July 2026</div>
     <div class="chart-wrap">
       <canvas id="mainChart"></canvas>
     </div>
     <div class="legend">
       <div class="legend-item"><div class="legend-dot" style="background:var(--commercial)"></div>Commercial</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--gia2h)"></div>GovCloud (Gia2h)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--gia2h)"></div>Gia2h</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--bja)"></div>Blackjack-A</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--bjj)"></div>Blackjack-J</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div>Overall</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--goal);border-radius:2px;width:18px;height:3px;margin-top:4px"></div>100% Goal</div>
     </div>
   </div>
@@ -717,19 +718,19 @@
 <script>
 // ─── DATA ────────────────────────────────────────────────────────────────────
 const reports = [
-  { date: '2025-12-05', label: 'Dec 5',  commercial: 71.07, gia2h: 70.57, bja: 37.5,  bjj: null },
-  { date: '2025-12-19', label: 'Dec 19', commercial: 71.3,  gia2h: 70.01, bja: 37.4,  bjj: null },
-  { date: '2026-01-22', label: 'Jan 22', commercial: 70.81, gia2h: 70.56, bja: 37.4,  bjj: null },
-  { date: '2026-02-06', label: 'Feb 6',  commercial: 73.3,  gia2h: 73.3,  bja: 38.4,  bjj: null },
-  { date: '2026-02-23', label: 'Feb 23', commercial: 72.7,  gia2h: 73.3,  bja: 38.4,  bjj: null },
-  { date: '2026-03-11', label: 'Mar 11', commercial: 73.2,  gia2h: 74.5,  bja: 46.6,  bjj: null },
-  { date: '2026-04-02', label: 'Apr 2',  commercial: 73.3,  gia2h: 74.4,  bja: 43.3,  bjj: null },
-  { date: '2026-04-22', label: 'Apr 22', commercial: 74.4,  gia2h: 74.3,  bja: 43.3,  bjj: null },
-  { date: '2026-05-07', label: 'May 7',  commercial: 75.1,  gia2h: 74.4,  bja: 43.3,  bjj: 81.5 },
-  { date: '2026-05-26', label: 'May 26', commercial: 75.7,  gia2h: 75.7,  bja: 42.6,  bjj: 81.6 },
-  { date: '2026-06-11', label: 'Jun 11', commercial: 76.5,  gia2h: 75.1,  bja: 44.7,  bjj: 82.5 },
-  { date: '2026-07-09', label: 'Jul 9',  commercial: 77.6,  gia2h: 76.9,  bja: 44.4,  bjj: 81.1 },
-  { date: '2026-07-27', label: 'Jul 27', commercial: 78.2,  gia2h: 78.0,  bja: 45.1,  bjj: 82.5 },
+  { date: '2025-12-05', label: 'Dec 5',  commercial: 71.07, gia2h: 70.57, bja: 37.5,  bjj: null,  overall: null },
+  { date: '2025-12-19', label: 'Dec 19', commercial: 71.3,  gia2h: 70.01, bja: 37.4,  bjj: null,  overall: null },
+  { date: '2026-01-22', label: 'Jan 22', commercial: 70.81, gia2h: 70.56, bja: 37.4,  bjj: null,  overall: null },
+  { date: '2026-02-06', label: 'Feb 6',  commercial: 73.3,  gia2h: 73.3,  bja: 38.4,  bjj: null,  overall: null },
+  { date: '2026-02-23', label: 'Feb 23', commercial: 72.7,  gia2h: 73.3,  bja: 38.4,  bjj: null,  overall: null },
+  { date: '2026-03-11', label: 'Mar 11', commercial: 73.2,  gia2h: 74.5,  bja: 46.6,  bjj: null,  overall: null },
+  { date: '2026-04-02', label: 'Apr 2',  commercial: 73.3,  gia2h: 74.4,  bja: 43.3,  bjj: null,  overall: null },
+  { date: '2026-04-22', label: 'Apr 22', commercial: 74.4,  gia2h: 74.3,  bja: 43.3,  bjj: null,  overall: null },
+  { date: '2026-05-07', label: 'May 7',  commercial: 75.1,  gia2h: 74.4,  bja: 43.3,  bjj: 81.5,  overall: null },
+  { date: '2026-05-26', label: 'May 26', commercial: 75.7,  gia2h: 75.7,  bja: 42.6,  bjj: 81.6,  overall: null },
+  { date: '2026-06-11', label: 'Jun 11', commercial: 76.5,  gia2h: 75.1,  bja: 44.7,  bjj: 82.5,  overall: null },
+  { date: '2026-07-09', label: 'Jul 9',  commercial: 77.6,  gia2h: 76.9,  bja: 44.4,  bjj: 81.1,  overall: 77.4 },
+  { date: '2026-07-27', label: 'Jul 27', commercial: 78.2,  gia2h: 78.0,  bja: 45.1,  bjj: 82.5,  overall: 78.1 },
 ];
 
 // ─── HISTORY TABLE ───────────────────────────────────────────────────────────
@@ -814,6 +815,20 @@ new Chart(mainCtx, {
         pointRadius: r => r.raw !== null ? 5 : 0,
         pointHoverRadius: 7,
         pointBackgroundColor: '#a78bfa',
+        tension: 0.35,
+        fill: false,
+        spanGaps: false,
+      },
+      {
+        label: 'Overall',
+        data: reports.map(r => r.overall),
+        borderColor: '#60a5fa',
+        backgroundColor: 'rgba(96,165,250,0.08)',
+        borderWidth: 2.5,
+        borderDash: [3, 3],
+        pointRadius: r => r.raw !== null ? 5 : 0,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#60a5fa',
         tension: 0.35,
         fill: false,
         spanGaps: false,
