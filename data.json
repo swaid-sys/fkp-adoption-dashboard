@@ -60,50 +60,50 @@
     {
       "date": "2026-03-11",
       "label": "Mar 11",
-      "q2": { "commercial": 79.4, "gia2h": 83.2, "bja": 69.0, "bjj": null },
-      "q4": { "commercial": 95.9, "gia2h": 90.8, "bja": 92.1, "bjj": null }
+      "q2": { "commercial": 79.4, "gia2h": 83.2, "bja": 69.0, "bjj": null, "overall": null },
+      "q4": { "commercial": 95.9, "gia2h": 90.8, "bja": 92.1, "bjj": null, "overall": null }
     },
     {
       "date": "2026-04-02",
       "label": "Apr 2",
-      "q2": { "commercial": 79.5, "gia2h": 83.1, "bja": 69.0, "bjj": null },
-      "q4": { "commercial": 95.9, "gia2h": 90.6, "bja": 92.0, "bjj": null }
+      "q2": { "commercial": 79.5, "gia2h": 83.1, "bja": 69.0, "bjj": null, "overall": null },
+      "q4": { "commercial": 95.9, "gia2h": 90.6, "bja": 92.0, "bjj": null, "overall": null }
     },
     {
       "date": "2026-04-22",
       "label": "Apr 22",
-      "q2": { "commercial": 80.1, "gia2h": 82.8, "bja": 69.0, "bjj": null },
-      "q4": { "commercial": 95.9, "gia2h": 90.2, "bja": 92.0, "bjj": null }
+      "q2": { "commercial": 80.1, "gia2h": 82.8, "bja": 69.0, "bjj": null, "overall": null },
+      "q4": { "commercial": 95.9, "gia2h": 90.2, "bja": 92.0, "bjj": null, "overall": null }
     },
     {
       "date": "2026-05-07",
       "label": "May 7",
-      "q2": { "commercial": 77.8, "gia2h": 78.9, "bja": 48.7, "bjj": 81.5 },
-      "q4": { "commercial": 95.9, "gia2h": 90.1, "bja": 75.4, "bjj": 91.1 }
+      "q2": { "commercial": 77.8, "gia2h": 78.9, "bja": 48.7, "bjj": 81.5, "overall": null },
+      "q4": { "commercial": 95.9, "gia2h": 90.1, "bja": 75.4, "bjj": 91.1, "overall": null }
     },
     {
       "date": "2026-05-26",
       "label": "May 26",
-      "q2": { "commercial": 77.8, "gia2h": 78.6, "bja": 47.9, "bjj": 81.6 },
-      "q4": { "commercial": 96.1, "gia2h": 90.9, "bja": 78.1, "bjj": 92.6 }
+      "q2": { "commercial": 77.8, "gia2h": 78.6, "bja": 47.9, "bjj": 81.6, "overall": null },
+      "q4": { "commercial": 96.1, "gia2h": 90.9, "bja": 78.1, "bjj": 92.6, "overall": null }
     },
     {
       "date": "2026-06-11",
       "label": "Jun 11",
-      "q2": { "commercial": 77.2, "gia2h": 77.1, "bja": 49.7, "bjj": 82.5 },
-      "q4": { "commercial": 96.2, "gia2h": 90.2, "bja": 78.9, "bjj": 93.6 }
+      "q2": { "commercial": 77.2, "gia2h": 77.1, "bja": 49.7, "bjj": 82.5, "overall": null },
+      "q4": { "commercial": 96.2, "gia2h": 90.2, "bja": 78.9, "bjj": 93.6, "overall": null }
     },
     {
       "date": "2026-07-09",
       "label": "Jul 9",
-      "q2": { "commercial": 77.8, "gia2h": 78.3, "bja": 49.2, "bjj": 81.1 },
-      "q4": { "commercial": 87.7, "gia2h": 89.4, "bja": 78.1, "bjj": 91.9 }
+      "q2": { "commercial": 77.8, "gia2h": 78.3, "bja": 49.2, "bjj": 81.1, "overall": 77.7 },
+      "q4": { "commercial": 87.7, "gia2h": 89.4, "bja": 78.1, "bjj": 91.9, "overall": 87.8 }
     },
     {
       "date": "2026-07-27",
       "label": "Jul 27",
-      "q2": { "commercial": 78.4, "gia2h": 78.2, "bja": 45.4, "bjj": 82.5 },
-      "q4": { "commercial": 87.8, "gia2h": 89.7, "bja": 71.2, "bjj": 93.6 }
+      "q2": { "commercial": 78.4, "gia2h": 78.2, "bja": 45.4, "bjj": 82.5, "overall": 78.3 },
+      "q4": { "commercial": 87.8, "gia2h": 89.7, "bja": 71.2, "bjj": 93.6, "overall": 87.9 }
     }
   ],
   "orgs": [
