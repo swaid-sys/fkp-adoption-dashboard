@@ -90,7 +90,7 @@
     .kpi-card.gia2h::before { background: var(--gia2h); }
     .kpi-card.bja::before { background: var(--bja); }
     .kpi-card.bjj::before { background: var(--bjj); }
-    .kpi-card.overall::before { background: var(--blue); }
+    .kpi-card.overall::before { background: var(--yellow); }
     .kpi-label {
       font-size: 11px;
       font-weight: 600;
@@ -109,7 +109,7 @@
     .kpi-card.gia2h .kpi-value { color: var(--gia2h); }
     .kpi-card.bja .kpi-value { color: var(--bja); }
     .kpi-card.bjj .kpi-value { color: var(--bjj); }
-    .kpi-card.overall .kpi-value { color: var(--blue); }
+    .kpi-card.overall .kpi-value { color: var(--yellow); }
     .kpi-meta {
       margin-top: 10px;
       font-size: 12px;
@@ -228,7 +228,7 @@
     .pct-gia2h { color: var(--gia2h); }
     .pct-bja { color: var(--bja); }
     .pct-bjj { color: var(--bjj); }
-    .pct-overall { color: #60a5fa; }
+    .pct-overall { color: #fbbf24; }
     .delta-pos { color: var(--green); }
     .delta-neg { color: var(--red); }
     .delta-zero { color: var(--text-muted); }
@@ -370,7 +370,7 @@
       <div class="legend-item"><div class="legend-dot" style="background:var(--gia2h)"></div>Gia2h</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--bja)"></div>Blackjack-A</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--bjj)"></div>Blackjack-J</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div>Overall</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div>Overall</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--goal);border-radius:2px;width:18px;height:3px;margin-top:4px"></div>100% Goal</div>
     </div>
   </div>
@@ -827,13 +827,13 @@ new Chart(mainCtx, {
       {
         label: 'Overall',
         data: reports.map(r => r.overall),
-        borderColor: '#60a5fa',
-        backgroundColor: 'rgba(96,165,250,0.08)',
+        borderColor: '#fbbf24',
+        backgroundColor: 'rgba(251,191,36,0.08)',
         borderWidth: 2.5,
         borderDash: [3, 3],
         pointRadius: r => r.raw !== null ? 5 : 0,
         pointHoverRadius: 7,
-        pointBackgroundColor: '#60a5fa',
+        pointBackgroundColor: '#fbbf24',
         tension: 0.35,
         fill: false,
         spanGaps: false,
@@ -1082,13 +1082,13 @@ new Chart(q2ProjCtx, {
       {
         label: 'Overall',
         data: projectionHistory.map(p => p.q2.overall),
-        borderColor: '#60a5fa',
-        backgroundColor: 'rgba(96,165,250,0.1)',
+        borderColor: '#fbbf24',
+        backgroundColor: 'rgba(251,191,36,0.1)',
         borderWidth: 2.5,
         borderDash: [3, 3],
         pointRadius: 5,
         pointHoverRadius: 7,
-        pointBackgroundColor: '#60a5fa',
+        pointBackgroundColor: '#fbbf24',
         tension: 0.3,
         fill: false,
       },
@@ -1200,13 +1200,13 @@ new Chart(q4ProjCtx, {
       {
         label: 'Overall',
         data: projectionHistory.map(p => p.q4.overall),
-        borderColor: '#60a5fa',
-        backgroundColor: 'rgba(96,165,250,0.1)',
+        borderColor: '#fbbf24',
+        backgroundColor: 'rgba(251,191,36,0.1)',
         borderWidth: 2.5,
         borderDash: [3, 3],
         pointRadius: 5,
         pointHoverRadius: 7,
-        pointBackgroundColor: '#60a5fa',
+        pointBackgroundColor: '#fbbf24',
         tension: 0.3,
         fill: false,
       },
