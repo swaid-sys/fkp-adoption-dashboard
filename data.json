@@ -1,19 +1,19 @@
 {
-  "lastUpdated": "July 27, 2026",
+  "lastUpdated": "August 12, 2026",
   "overallStatus": {
     "badge": "yellow",
-    "text": "🟡 AT RISK — 87–93% FKP adoption projected across Commercial, Gia2h, and Blackjack-J. Blackjack-A remains below target."
+    "text": "🟡 AT RISK — 88–93% FKP adoption projected across Commercial, Gia2h, and Blackjack-J. Blackjack-A remains significantly below the 90% FY27 target."
   },
   "executiveSummary": {
-    "bottomLine": "Confirmed migrations shifting into FY28 (CDP, MonCloud BJ-A, RADX, Thunderbird) have capped our maximum achievable FY27 adoption. To hit even these revised ceilings, teams must still close three critical timeline gaps (see Critical Actions Required below).",
+    "bottomLine": "Blackjack-A migration projections are 20% below the FY27 90% target, driven by org timeline shifts and lengthy cluster-build timelines blocking STP and Security. Confirmed migrations shifting into FY28 (CDP, MonCloud BJ-A, ADX, Thunderbird) have capped maximum achievable FY27 adoption. Two critical timeline gaps remain.",
     "ceilings": [
-      { "label": "Commercial, Gia2h, & BJ-J", "value": "87–93%" },
-      { "label": "BJ-A", "value": "71.2%" }
+      { "label": "Commercial, Gia2h, & BJ-J", "value": "88–93%" },
+      { "label": "BJ-A", "value": "69.9%" }
     ],
     "keyChanges": [
-      "Blackjack-A Projection Slip: There was an ~8% slip in FY27 Q4 projections due to STP team shifts (from Blackjack-A cluster build delays), as well as RADX timeline shifts.",
-      "RADX: Multiple teams shifted their timelines from R266 to R268 — across Commercial (Spinnaker), Gia2h (FIT and PCS Hydration), and Blackjack (PCS, SFCD Managed Workflows, SFCD Multi-Substrate Releases, and TIDE).",
-      "Thunderbird: Thunderbird FKP Adoption in Commercial will move from FY27 Q3 → FY28 Q1. Team is prioritizing GovCloud enablement based on VA customer FY27 Q4 requirement. FKP leadership is currently aligning on this revised timeline."
+      "Commercial and Gia2h Q4 projections increased about 0.5%, while Blackjack-A and Blackjack-J fell 1.3% and 0.3%, respectively.",
+      "ADX timeline shifts moved SFCD Managed Workflows, SFCD Ross, SFCD Structured Config, and Spinnaker work from R266 to R268.",
+      "Einstein Analytics moved from On Track to At Risk; clarity is expected in 8b, and Flowsnake is consequently also At Risk."
     ],
     "rebaseline": {
       "description": "After discussion and alignment with FKP leadership, the program will re-baseline status reporting against the HPS M6.2.1 90% FKP service instance target. This new target will appropriately reflect FY28 timelines and track against maximum feasible progress.",
@@ -35,7 +35,8 @@
     { "date": "2026-05-26", "commercial": 75.7, "gia2h": 75.7, "bja": 42.6, "bjj": 81.6, "overall": null },
     { "date": "2026-06-11", "commercial": 76.5, "gia2h": 75.1, "bja": 44.7, "bjj": 82.5, "overall": null },
     { "date": "2026-07-09", "commercial": 77.6, "gia2h": 76.9, "bja": 44.4, "bjj": 81.1, "overall": 77.4 },
-    { "date": "2026-07-27", "commercial": 78.2, "gia2h": 78.0, "bja": 45.1, "bjj": 82.5, "overall": 78.1 }
+    { "date": "2026-07-27", "commercial": 78.2, "gia2h": 78.0, "bja": 45.1, "bjj": 82.5, "overall": 78.1 },
+    { "date": "2026-08-12", "commercial": 78.2, "gia2h": 78.0, "bja": 45.1, "bjj": 82.5, "overall": 78.1 }
   ],
   "currentInstances": {
     "commercial": { "onFkp": 31944, "total": 42542 }
@@ -49,11 +50,11 @@
       "overall": 78.3
     },
     "q4": {
-      "commercial": { "value": 87.8, "status": "at-risk" },
-      "gia2h": { "value": 89.7, "status": "at-risk" },
-      "bja": { "value": 71.2, "status": "off-track" },
-      "bjj": { "value": 93.6, "status": "on-track" },
-      "overall": { "value": 87.9, "status": "at-risk" }
+      "commercial": { "value": 88.4, "status": "at-risk" },
+      "gia2h": { "value": 89.8, "status": "at-risk" },
+      "bja": { "value": 69.9, "status": "off-track" },
+      "bjj": { "value": 93.3, "status": "on-track" },
+      "overall": { "value": 88.4, "status": "at-risk" }
     }
   },
   "projectionHistory": [
@@ -104,6 +105,12 @@
       "label": "Jul 27",
       "q2": { "commercial": 78.4, "gia2h": 78.2, "bja": 45.4, "bjj": 82.5, "overall": 78.3 },
       "q4": { "commercial": 87.8, "gia2h": 89.7, "bja": 71.2, "bjj": 93.6, "overall": 87.9 }
+    },
+    {
+      "date": "2026-08-12",
+      "label": "Aug 12",
+      "q2": { "commercial": 78.4, "gia2h": 78.2, "bja": 45.4, "bjj": 82.5, "overall": 78.3 },
+      "q4": { "commercial": 88.4, "gia2h": 89.8, "bja": 69.9, "bjj": 93.3, "overall": 88.4 }
     }
   ],
   "orgs": [
@@ -111,7 +118,7 @@
       "name": "Security",
       "owner": "Iain Mulholland",
       "commercial": 100,
-      "gia2h": 98.3,
+      "gia2h": 98.4,
       "milestones": [
         {
           "milestone": "Migrate SAI-Gateway and Tentacle in GovCloud.",
@@ -125,8 +132,8 @@
     {
       "name": "Developer Experience and Observability",
       "owner": "Kedar Doshi",
-      "commercial": 71.1,
-      "gia2h": 66.2,
+      "commercial": 71.8,
+      "gia2h": 65.8,
       "milestones": [
         {
           "milestone": "Migrate MonCloud (Splunk, Madeira, Funnel, CWME) in Commercial & GovCloud.",
@@ -136,7 +143,7 @@
           "notes": "CWME, Funnel, and Splunk Blackjack-A timelines currently extending into FY28. Other services on track for FY27."
         },
         {
-          "milestone": "Migrate RADX in Commercial and GovCloud.",
+          "milestone": "Migrate ADX in Commercial and GovCloud.",
           "target": "FY28 Q1",
           "status": "at-risk",
           "statusLabel": "🟡 At Risk",
@@ -147,14 +154,14 @@
           "target": "FY28 Q4",
           "status": "on-track",
           "statusLabel": "🟢 On Track",
-          "notes": "21 of 37 on track for FY27. (Figure discrepancy — 35 vs. 37 — as stated in the source report.)"
+          "notes": "18 of 35 on track for FY27."
         }
       ]
     },
     {
       "name": "Service Cloud",
       "owner": "Yacov Salomon",
-      "commercial": 89.6,
+      "commercial": 89.2,
       "gia2h": 100,
       "milestones": [
         {
@@ -194,8 +201,8 @@
           "notes": "Blocked on Dependency: dependent on EMR Workload capability delivery by FKP, on track for end-FY27 Q4. CDP Data Plane team currently prioritizing GCP work. This timeline has been accepted by both FKP and CDP leadership."
         },
         {
-          "milestone": "Deprecate 15 legacy EKS services.",
-          "target": "FY28 Q1",
+          "milestone": "Deprecate 14 legacy EKS services.",
+          "target": "FY28 Q2",
           "status": "on-track",
           "statusLabel": "🟢 On Track",
           "notes": "Dependent on CDP migration. Recently moved from FY27 Q4 to FY28 Q1."
@@ -205,22 +212,22 @@
     {
       "name": "Analytics Cloud",
       "owner": "Sireesh Bodireddygari",
-      "commercial": 97.4,
+      "commercial": 96.1,
       "gia2h": 100,
       "milestones": [
         {
           "milestone": "Migrate Einstein Analytics in Commercial.",
           "target": "FY27 Q4",
-          "status": "on-track",
-          "statusLabel": "🟢 On Track",
-          "notes": "Test and stage are complete. Prod0 rollout is waiting on Kompute Group to be available in Prod. Once Prod0 is complete, the Prod migration will be planned, with a likely ETA in early-Q4."
+          "status": "at-risk",
+          "statusLabel": "🟡 At Risk",
+          "notes": "Prod0 rollout is waiting on Kompute Group in Prod. The team is re-evaluating its approach and timeline following recent incidents; clarity is expected in 8b."
         }
       ]
     },
     {
       "name": "Availability and Infrastructure Engineering",
       "owner": "Nishant Gupta",
-      "commercial": 92.3,
+      "commercial": 92.7,
       "gia2h": 50.9,
       "milestones": [
         {
@@ -242,8 +249,8 @@
     {
       "name": "HPS",
       "owner": "Paul Contantinides",
-      "commercial": 88.3,
-      "gia2h": 86.1,
+      "commercial": 87.7,
+      "gia2h": 86.6,
       "milestones": [
         {
           "milestone": "Migrate HBase/Gridforce in Commercial and GovCloud.",
@@ -255,9 +262,9 @@
         {
           "milestone": "Migrate Flowsnake in Commercial.",
           "target": "FY27 Q4",
-          "status": "on-track",
-          "statusLabel": "🟢 On Track",
-          "notes": "Dependent on 2 tenants who are still using Flowsnake on EKS — Delphi (FY27 Q2) and CRMA Analytics (FY27 Q4)."
+          "status": "at-risk",
+          "statusLabel": "🟡 At Risk",
+          "notes": "Dependent on Delphi (FY27 early Q3) and CRMA Analytics (FY27 Q4, now at risk)."
         },
         {
           "milestone": "Migrate Ajna in Commercial and GovCloud.",
@@ -268,7 +275,7 @@
         },
         {
           "milestone": "Deprecate 1 legacy EKS service.",
-          "target": "FY27 Q2",
+          "target": "FY27 Q3",
           "status": "on-track",
           "statusLabel": "🟢 On Track",
           "notes": ""
@@ -278,8 +285,8 @@
     {
       "name": "Salesforce Trust Platform",
       "owner": "Herman Kwong",
-      "commercial": 71.7,
-      "gia2h": 53.7,
+      "commercial": 71.2,
+      "gia2h": 54.8,
       "milestones": [
         {
           "milestone": "Migrate IAM, KMS, NetSec, PKI, and Vault services in GovCloud.",
@@ -300,10 +307,10 @@
           "target": "FY28 Q3 (tentative)",
           "status": "at-risk",
           "statusLabel": "🟡 Under Discussion",
-          "notes": "Timeline being evaluated by STP leadership. Dev Pilot POC on track for 8a, which will guide on timelines."
+          "notes": "Timeline being evaluated by STP leadership. Dev Pilot POC is on track for early 8b, which will guide timelines."
         },
         {
-          "milestone": "Deprecate 32 legacy EKS services.",
+          "milestone": "Deprecate 28 legacy EKS services.",
           "target": "FY27 Q4",
           "status": "on-track",
           "statusLabel": "🟢 On Track",
@@ -314,48 +321,34 @@
   ],
   "criticalActions": [
     {
-      "title": "1. Timeline Delivery — Kedar Doshi (RADX)",
-      "needBy": "End-R264",
+      "title": "1. Timeline Delivery — Kedar Doshi (ADX)",
+      "needBy": "Past due; now 9b",
       "owner": "Deepak Kumar",
       "action": "Provide missing timelines for FIT migration (Blackjack-A and Blackjack-J), which accounts for 21% and 7% of BJ-A and BJ-J footprints, respectively.",
-      "status": "Spike in progress with ETA of 7b; awaiting updates."
+      "status": "Foundation FD migration is due by end-August; the Blackjack spike follows, with timeline ETA now 9b."
     },
     {
-      "title": "2. Timeline Delivery — Herman Kwong (STP)",
-      "needBy": "End-R264",
-      "owner": "Rahul Nathan",
-      "action": "Provide missing timelines for Private Connect (Commercial & GovCloud), which accounts for <1% of Commercial and GovCloud instances.",
-      "status": "Private Connect POC complete; timelines to come by 7/31."
-    },
-    {
-      "title": "3. Public Proxy Acceleration — Herman Kwong (STP)",
-      "needBy": "End-R264",
+      "title": "2. Public Proxy Acceleration — Herman Kwong (STP)",
+      "needBy": "Past due; now 8b",
       "owner": "Sanjeev Chhabria",
       "action": "Evaluate methods to compress to FY27.",
-      "status": "Current timeline extends through FY28. Dev Pilot POC on track for 8a, after which firm timelines and paths to acceleration will be provided."
+      "status": "Current timeline extends through FY28. Dev Pilot POC is on track for 8b, after which firm timelines and paths to acceleration will be provided."
     }
   ],
   "blockers": [
     {
       "blocker": "FIT migration timelines missing (Blackjack-A & Blackjack-J, 21%/7% of footprint)",
-      "owner": "Deepak Kumar / Kedar Doshi (RADX)",
-      "eta": "End-R264",
+      "owner": "Deepak Kumar / Kedar Doshi (ADX)",
+      "eta": "Past due; now 9b",
       "status": "off-track",
-      "statusLabel": "🔴 Spike in progress, ETA 7b"
-    },
-    {
-      "blocker": "Private Connect timeline missing (Commercial & GovCloud, <1% of footprint)",
-      "owner": "Rahul Nathan / Herman Kwong (STP)",
-      "eta": "End-R264",
-      "status": "off-track",
-      "statusLabel": "🟡 POC complete; timelines by 7/31"
+      "statusLabel": "🔴 Foundation FD due end-Aug; Blackjack spike follows"
     },
     {
       "blocker": "Public Proxy acceleration (FY28 → FY27)",
       "owner": "Sanjeev Chhabria / Herman Kwong (STP)",
-      "eta": "End-R264",
+      "eta": "Past due; now 8b",
       "status": "off-track",
-      "statusLabel": "🔴 Dev Pilot POC on track for 8a"
+      "statusLabel": "🔴 Dev Pilot POC on track for 8b"
     },
     {
       "blocker": "Blackjack-A cluster build delays (blocks STP & Security migrations)",
@@ -365,8 +358,15 @@
       "statusLabel": "🔴 Significantly delayed 6+ months; 5 builds in progress"
     },
     {
-      "blocker": "Decommission bottleneck (84 services on path to deprecation, down from 144 in May)",
-      "owner": "Shan Appajodu (RADX)",
+      "blocker": "ADX timeline shifts (~3% of Commercial and GovCloud footprint)",
+      "owner": "Shan Appajodu (ADX)",
+      "eta": "End-August deep-dive",
+      "status": "off-track",
+      "statusLabel": "🔴 Drove BJ-A -1.3pp / BJ-J -0.3pp"
+    },
+    {
+      "blocker": "Decommission bottleneck (79 services on path to deprecation, down from 144 in May)",
+      "owner": "Shan Appajodu (ADX)",
       "eta": "End-R266 (FKP) / End-R268 (non-FKP)",
       "status": "off-track",
       "statusLabel": "🔴 Multi-month backlog with Falcon Decomm"
